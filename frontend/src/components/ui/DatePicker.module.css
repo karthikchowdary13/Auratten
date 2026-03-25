@@ -1,0 +1,222 @@
+.container {
+    position: relative;
+    width: 100%;
+}
+
+.label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.inputWrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.inputWrapper:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(127, 119, 221, 0.4);
+}
+
+.inputActive {
+    border-color: var(--accent);
+    background: rgba(127, 119, 221, 0.05);
+    box-shadow: 0 0 0 2px rgba(127, 119, 221, 0.2);
+}
+
+.calendarIcon {
+    color: var(--accent);
+    opacity: 0.8;
+}
+
+.valText {
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.placeholder {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.clearBtn {
+    margin-left: auto;
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    color: var(--text-muted);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clearBtn:hover {
+    background: #ef4444;
+    color: white;
+}
+
+/* Calendar Dropdown */
+.calendarDropdown {
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    left: 0 !important;
+    width: 280px !important;
+    background-color: #0f111a !important; /* Extremely solid dark background */
+    opacity: 1 !important; /* Explicitly fully opaque */
+    border: 1px solid var(--border) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 1) !important;
+    z-index: 10000 !important; /* On top of everything */
+    padding: 16px !important;
+    visibility: visible !important;
+    transform: translateZ(0) !important; /* Force separate GPU layer */
+    will-change: transform, opacity !important;
+    animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.calendarHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.navBtn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.navBtn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.monthDisplay {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text-primary);
+}
+
+.daysRow {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 8px;
+}
+
+.dayName {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    padding: 8px 0;
+}
+
+.cellsGrid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+}
+
+.cell {
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 8px;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.cell:hover:not(.disabled) {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.disabled {
+    color: rgba(255, 255, 255, 0.15);
+}
+
+.today {
+    color: var(--accent);
+    font-weight: 800;
+}
+
+.today::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    width: 4px;
+    height: 4px;
+    background: var(--accent);
+    border-radius: 50%;
+}
+
+.selected {
+    background: var(--accent) !important;
+    color: white !important;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(127, 119, 221, 0.4);
+}
+
+.footer {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: center;
+}
+
+.todayBtn {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.todayBtn:hover {
+    background: var(--accent);
+    color: white;
+}

@@ -1,0 +1,27 @@
+.wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.main {
+    flex: 1;
+    padding: 24px 20px;
+    min-height: 100vh;
+    background: var(--bg-primary);
+    transition: margin-left 0.3s ease;
+}
+
+@media (min-width: 768px) {
+    .main {
+        margin-left: 240px;
+        padding: 36px 40px;
+    }
+}
+
+@media (max-width: 767px) {
+    .main {
+        margin-left: 0;
+        padding-bottom: 90px;
+        /* Space for BottomNav */
+    }
+}

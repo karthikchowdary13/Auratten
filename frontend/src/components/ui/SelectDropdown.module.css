@@ -1,0 +1,111 @@
+.container {
+    position: relative;
+    user-select: none;
+    font-size: 14px;
+}
+
+.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 16px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 42px;
+}
+
+.trigger:hover {
+    border-color: var(--border-hover);
+    background: var(--bg-hover);
+}
+
+.trigger.open {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.placeholder {
+    color: var(--text-muted);
+}
+
+.value {
+    color: var(--text-primary);
+}
+
+.icon {
+    color: var(--text-muted);
+    transition: transform 0.2s;
+    margin-left: 12px;
+}
+
+.icon.rotated {
+    transform: rotate(180deg);
+}
+
+.menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 100%;
+    min-width: 140px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 6px;
+    z-index: 50;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    animation: dropdownFadeIn 0.15s ease-out;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: background 0.15s, color 0.15s;
+}
+
+.item:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.item.selected {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--accent);
+}
+
+.itemLabel {
+    flex: 1;
+}
+
+.checkIcon {
+    flex-shrink: 0;
+    margin-left: 8px;
+}

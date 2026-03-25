@@ -1,0 +1,135 @@
+.toastContainer {
+    position: fixed;
+    top: 80px;
+    right: 24px;
+    z-index: 20000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none;
+}
+
+.toast {
+    background: #0c0c14; /* Pure solid dark background */
+    border: 1px solid rgba(255, 255, 255, 0.12); /* Slightly brighter border */
+    border-radius: 16px;
+    padding: 16px 20px;
+    min-width: 340px;
+    max-width: 420px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 
+        0 32px 64px -16px rgba(0, 0, 0, 0.8),
+        0 0 0 1px rgba(255, 255, 255, 0.08); /* Double border effect for 'brightness' */
+    pointer-events: auto;
+    animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: right center;
+    position: relative;
+    overflow: hidden;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(40px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+.toastExit {
+    animation: slideOutRight 0.3s forwards cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideOutRight {
+    to {
+        opacity: 0;
+        transform: translateX(20px) scale(0.98);
+    }
+}
+
+.toastIcon {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+}
+
+.toastContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.toastTitle {
+    font-size: 14px;
+    font-weight: 700;
+    color: #FFFFFF;
+    letter-spacing: -0.01em;
+}
+
+.toastMessage {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.4;
+}
+
+.toastClose {
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.03);
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toastClose:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #FFFFFF;
+}
+
+/* Variants with Left Accent */
+.toast::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.success::before { background: #10B981; }
+.error::before { background: #EF4444; }
+.info::before { background: #7F77DD; }
+.warning::before { background: #F59E0B; }
+
+.success .toastIcon { color: #10B981; }
+.error .toastIcon { color: #EF4444; }
+.info .toastIcon { color: #7F77DD; }
+.warning .toastIcon { color: #F59E0B; }
+
+.progressBar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    width: 100%;
+    opacity: 0.3;
+}
+
+.success .progressBar {
+    background: #22c55e;
+}
+
+.error .progressBar {
+    background: var(--error);
+}
