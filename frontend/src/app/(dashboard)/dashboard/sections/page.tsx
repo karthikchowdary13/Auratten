@@ -49,7 +49,7 @@ export default function SectionsPage() {
     // -- Summary Stats --
     const summaryStats = useMemo(() => {
         if (!sections || !sections.length) return null;
-        const totalStudents = sections.reduce((acc, s) => acc + (s._count?.users || 0), 0);
+        const totalStudents = sections.reduce((acc, s) => acc + (s.studentCount || 0), 0);
         const validStats = sections.filter(s => typeof s.avgAttendance30Days === 'number');
         const avgAtt = validStats.length > 0 
             ? Math.round(validStats.reduce((acc, s) => acc + s.avgAttendance30Days, 0) / validStats.length)
@@ -244,7 +244,7 @@ export default function SectionsPage() {
                                     <div className={styles.statsRow}>
                                         <div className={styles.stats}>
                                             <Users size={14} />
-                                            <span>{section._count?.users || 0} Students</span>
+                                            <span>{section.studentCount || 0} Students</span>
                                         </div>
                                     </div>
 

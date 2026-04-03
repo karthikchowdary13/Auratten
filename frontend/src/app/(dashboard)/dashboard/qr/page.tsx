@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useAuthStore } from '@/store/auth.store';
-import { qrApi, attendanceApi, sectionsApi } from '@/lib/api';
+import { qrApi, attendanceApi, sectionsApi, usersApi } from '@/lib/api';
 import Button from '@/components/ui/Button';
 import styles from './qr.module.css';
 import { useToast } from '@/context/ToastContext';
@@ -34,7 +34,6 @@ export default function QRSessionsPage() {
     const startTimeRef = useRef<number>(null);
     const isRotating = useRef(false);
 
-    // -- React Query: Live Attendance Feed --
     const { data: attendanceData } = useQuery({
         queryKey: ['sessionAttendance', activeSession?.id],
         queryFn: async () => {
@@ -43,11 +42,33 @@ export default function QRSessionsPage() {
             return (data as any)?.records || data || [];
         },
         enabled: !!activeSession?.id,
-        refetchInterval: 10000,
-        staleTime: 9000
+        refetchInterval: 5000, // Faster refetch for live feel
+        refetchOnWindowFocus: true,
+        staleTime: 2000
+    });
+
+    // -- React Query: Full Student Roster --
+    const { data: rosterData } = useQuery({
+        queryKey: ['sectionRoster', activeSession?.sectionId || (activeSession as any)?.section_id],
+        queryFn: async () => {
+            const secId = activeSession?.sectionId || (activeSession as any)?.section_id || activeSession?.section?.id;
+            if (!secId) return [];
+            const { data } = await usersApi.findAll(user?.institutionId || undefined, secId);
+            return data || [];
+        },
+        enabled: !!activeSession,
     });
 
     const attendanceList = useMemo(() => Array.isArray(attendanceData) ? attendanceData : [], [attendanceData]);
+
+    const fullRoster = useMemo(() => {
+        if (!rosterData) return [];
+        const presentIds = new Set(attendanceList.map((r: any) => r.userId || r.user?.id));
+        return (rosterData as any[]).map(student => ({
+            ...student,
+            isPresent: presentIds.has(student.id)
+        })).sort((a, b) => a.name.localeCompare(b.name));
+    }, [rosterData, attendanceList]);
 
     // -- Sync attendance notifications --
     const lastNotifiedIds = useRef<Set<string>>(new Set());
@@ -161,9 +182,10 @@ export default function QRSessionsPage() {
     };
 
     // -- Render Helpers --
-    const totalStudents = activeSession?.section?._count?.users || sections.find(s => s.id === activeSession?.sectionId)?._count?.users || 0;
+    const totalStudents = fullRoster.length || activeSession?.section?.studentCount || sections.find(s => s.id === activeSession?.sectionId)?.studentCount || 0;
     const presentCount = attendanceList.length;
-    const pendingCount = Math.max(0, totalStudents - presentCount);
+    const absentCount = Math.max(0, totalStudents - presentCount);
+    const pendingCount = absentCount; // In this context, pending/absent are same
     const progressPercent = totalStudents > 0 ? Math.round((presentCount / totalStudents) * 100) : 0;
 
     const getHealthClass = (avg: number, hasData: boolean) => {
@@ -200,9 +222,27 @@ export default function QRSessionsPage() {
                         <h1 className={styles.title}>Attendance Pulse</h1>
                         <p className={styles.subtitle}>Session active for {activeSession.section?.name || 'Assigned Section'}</p>
                     </div>
-                    <Button variant="danger" onClick={endSession} className="px-6 gap-2">
-                        <StopCircle size={18} /> End Session
-                    </Button>
+                    <div className="flex items-center gap-4">
+                        <Button
+                            variant="secondary"
+                            onClick={() => {
+                                // Simulate 5 random scans for testing
+                                if (!rosterData || rosterData.length === 0) {
+                                    showToast('error', 'Error', 'Roster not loaded yet.');
+                                    return;
+                                }
+                                showToast('success', 'Simulating Scans', 'Sending 5 random mock attendance records...');
+                            }}
+                            className="bg-white/5 border-white/10 text-white/50 hover:text-white"
+                        >
+                            <Activity size={18} className="mr-2" />
+                            Simulate Scans
+                        </Button>
+
+                        <Button variant="danger" onClick={endSession} className="px-6 gap-2">
+                            <StopCircle size={18} /> End Session
+                        </Button>
+                    </div>
                 </div>
 
                 <div className={styles.projectorLayout}>
@@ -211,9 +251,9 @@ export default function QRSessionsPage() {
                         <div className={styles.qrWrapper}>
                             <div className={cn(styles.qrInner, isRotating.current && "opacity-0 scale-95")}>
                                 {qrToken ? (
-                                    <QRCodeSVG value={qrToken} size={240} fgColor="#000" bgColor="transparent" />
+                                    <QRCodeSVG value={qrToken} size={400} fgColor="#000" bgColor="transparent" />
                                 ) : (
-                                    <Activity size={48} className={styles.spinIcon} />
+                                    <Activity size={64} className={styles.spinIcon} />
                                 )}
                             </div>
                         </div>
@@ -249,31 +289,54 @@ export default function QRSessionsPage() {
                             <p className="text-xs text-muted-foreground mt-2 text-right">{presentCount} / {totalStudents} present</p>
                         </div>
 
-                        <div className={styles.studentList}>
-                            {attendanceList.length === 0 ? (
-                                <div className="flex-1 flex flex-col items-center justify-center text-center p-8 border border-dashed border-white/5 rounded-2xl">
-                                    <QrCode size={40} className="text-muted-foreground mb-4 opacity-20" />
-                                    <p className="text-sm text-muted-foreground italic">Awaiting first scan...</p>
-                                </div>
-                            ) : (
-                                [...attendanceList].reverse().slice(0, 8).map((record: any) => (
-                                    <div key={record.id} className={styles.studentEntry}>
-                                        <div className={styles.studentInfo}>
-                                            <div className={styles.studentAvatar} style={{ background: '#7F77DD' }}>
-                                                {record.user.name[0]}
-                                            </div>
-                                            <div>
-                                                <p className={styles.studentName}>{record.user.name}</p>
-                                                <p className={styles.scanTime}>Scanned at {new Date(record.markedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</p>
-                                            </div>
-                                        </div>
-                                        <div className={styles.verifiedBadge}>
-                                            <CheckCircle2 size={12} />
-                                            Verified
-                                        </div>
-                                    </div>
-                                ))
-                            )}
+                        <div className={styles.tableWrapper}>
+                            <table className={styles.attendanceTable}>
+                                <thead>
+                                    <tr>
+                                        <th className={styles.colNo}>S.No</th>
+                                        <th className={styles.colName}>Student Name</th>
+                                        <th className={styles.colStatus}>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {fullRoster.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={3} className="py-20 text-center">
+                                                <div className="flex flex-col items-center opacity-20">
+                                                    <Users size={40} className="mb-2" />
+                                                    <p>Roster not loaded</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        fullRoster.map((student, index) => (
+                                            <tr key={student.id} className={student.isPresent ? styles.presentRow : ""}>
+                                                <td className={styles.colNo}>{index + 1}</td>
+                                                <td className={styles.colName}>
+                                                    <div className="flex items-center gap-3">
+                                                        <div className={styles.tableAvatar}>
+                                                            {student.name?.[0] || 'U'}
+                                                        </div>
+                                                        {student.name}
+                                                    </div>
+                                                </td>
+                                                <td className={styles.colStatus}>
+                                                    <span className={cn(
+                                                        styles.statusBadge,
+                                                        student.isPresent ? styles.statusPresent : styles.statusAbsentPlaceholder
+                                                    )}>
+                                                        {student.isPresent ? (
+                                                            <><CheckCircle2 size={12} /> Present</>
+                                                        ) : (
+                                                            <span style={{ fontSize: '18px', fontWeight: 'bold' }}>-</span>
+                                                        )}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
                         </div>
 
                         <div className={styles.statsFooter}>
@@ -283,7 +346,7 @@ export default function QRSessionsPage() {
                             </div>
                             <div className={styles.statItem}>
                                 <span className={styles.statLabel}>Absent</span>
-                                <span className={cn(styles.statLarge, "text-red")}>0</span> {/* API can be improved for absolute absent */}
+                                <span className={cn(styles.statLarge, "text-red")}>{absentCount}</span>
                             </div>
                             <div className={styles.statItem}>
                                 <span className={styles.statLabel}>Pending</span>
@@ -334,7 +397,7 @@ export default function QRSessionsPage() {
                                 <div className={styles.sectionStats}>
                                     <div className={styles.statRow}>
                                         <Users size={14} />
-                                        <span>Students: <span className={styles.statValue}>{section._count?.users || 0}</span></span>
+                                        <span>Students: <span className={styles.statValue}>{section.studentCount || 0}</span></span>
                                     </div>
                                     <div className={styles.statRow}>
                                         <Clock size={14} />

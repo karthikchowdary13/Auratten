@@ -30,17 +30,48 @@ import styles from './attendance.module.css';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import { useToast } from '@/context/ToastContext';
 
+// Safe date formatting helpers to prevent RangeError
+const safeFormatDate = (dateStr: any, formatStr: string, fallback: string = 'N/A') => {
+    try {
+        if (!dateStr) return fallback;
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return fallback;
+        return format(d, formatStr);
+    } catch (e) {
+        return fallback;
+    }
+};
+
+const safeFormatTime = (dateStr: any, fallback: string = '-') => {
+    try {
+        if (!dateStr) return fallback;
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return fallback;
+        return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch (e) {
+        return fallback;
+    }
+};
+
+const safeGetTime = (dateStr: any, fallback: number = 0) => {
+    try {
+        if (!dateStr) return fallback;
+        const d = new Date(dateStr);
+        return isNaN(d.getTime()) ? fallback : d.getTime();
+    } catch (e) {
+        return fallback;
+    }
+};
+
 export default function AttendanceScannerPage() {
     const { user, isHydrated } = useAuthStore();
     const { showToast } = useToast();
 
     // Student State
-    const [token, setToken] = useState('');
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
     const [message, setMessage] = useState('');
     const [deviceFingerprint, setDeviceFingerprint] = useState('');
-    const [isManual, setIsManual] = useState(false);
     const scannerRef = useRef<Html5QrcodeScanner | null>(null);
 
     // Teacher/Admin State
@@ -72,12 +103,27 @@ export default function AttendanceScannerPage() {
         } else {
             // Teacher/Admin Setup
             loadSessionHistory();
+            
+            // Add polling for "real-time" history updates (every 10s)
+            const historyInterval = setInterval(() => {
+                if (!searchQuery && !selectedSession) {
+                    loadSessionHistory();
+                }
+            }, 10000);
+            
+            // Update when the tab becomes active again
+            window.addEventListener('focus', loadSessionHistory);
+            
+            return () => {
+                clearInterval(historyInterval);
+                window.removeEventListener('focus', loadSessionHistory);
+            };
         }
     }, [user]);
 
     // --- Student Logic ---
     useEffect(() => {
-        if (!isManual && user?.role === 'STUDENT' && status === 'idle') {
+        if (user?.role === 'STUDENT' && status === 'idle') {
             const scanner = new Html5QrcodeScanner(
                 'reader',
                 { fps: 10, qrbox: { width: 250, height: 250 } },
@@ -94,7 +140,7 @@ export default function AttendanceScannerPage() {
                 scannerRef.current = null;
             }
         };
-    }, [isManual, user?.role, status]);
+    }, [user?.role, status]);
 
     async function onScanSuccess(decodedText: string) {
         if (loading) return;
@@ -125,7 +171,6 @@ export default function AttendanceScannerPage() {
             setStatus('success');
             setMessage('Awesome! You have been successfully marked PRESENT.');
             showToast('success', 'Attendance Marked', 'You are officially present for this session!');
-            setToken('');
         }
         setLoading(false);
     };
@@ -187,16 +232,19 @@ export default function AttendanceScannerPage() {
     if (user?.role !== 'STUDENT') {
         // FILTERING LOGIC
         const filteredSessions = sessionHistory.filter(s => {
+            const createdAt = s.createdAt;
+            const dateStr = safeFormatDate(createdAt, 'P', ''); // Use localized date format for search
+            const createdTime = safeGetTime(createdAt);
+
             const matchesSearch =
-                s.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                String(s.id).toLowerCase().includes(searchQuery.toLowerCase()) ||
                 s.section?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 s.createdBy?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                new Date(s.createdAt).toLocaleDateString().includes(searchQuery);
+                dateStr.includes(searchQuery);
 
             // If the user is actively searching, always show matches regardless of clear state
             if (searchQuery.length > 0) return matchesSearch;
 
-            const createdTime = new Date(s.createdAt).getTime();
             const isHidden = lastClearedAt && createdTime <= lastClearedAt;
 
             // Not hidden — show normally
@@ -208,7 +256,7 @@ export default function AttendanceScannerPage() {
                 return (
                     s.section?.name?.toLowerCase().includes(q) ||
                     s.createdBy?.name?.toLowerCase().includes(q) ||
-                    new Date(s.createdAt).toLocaleDateString().includes(restoreQuery.trim())
+                    dateStr.toLowerCase().includes(restoreQuery.trim().toLowerCase())
                 );
             }
 
@@ -241,24 +289,37 @@ export default function AttendanceScannerPage() {
                 {!selectedSession ? (
                     <div className={styles.historySection}>
                         <div className={styles.searchBar}>
-                            <div className={styles.searchInputWrapper}>
-                                <Search size={18} className={styles.searchIcon} />
-                                <input
-                                    type="text"
-                                    placeholder="Search by section, date (MM/DD/YYYY), or ID..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className={styles.searchInput}
-                                />
+                            <Search size={18} className={styles.searchIcon} />
+                            <input
+                                type="text"
+                                placeholder="Search by section, ID, or activity..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className={styles.searchInput}
+                            />
+                            <div className={styles.dateDisplay}>
+                                {format(new Date(), 'dd/MM/yyyy')}
                             </div>
+                            <Button 
+                                variant="primary" 
+                                size="sm" 
+                                className={styles.searchButton}
+                                onClick={loadSessionHistory}
+                            >
+                                <Search size={16} /> Search
+                            </Button>
                             <div className={styles.historyActions}>
                                 {lastClearedAt ? (
                                     <Button variant="secondary" size="sm" onClick={() => setShowRestoreModal(true)} title="Restore Specific Records">
                                         <History size={16} style={{ marginRight: 6 }} /> Restore
                                     </Button>
                                 ) : (
-                                    <Button variant="danger" size="sm" onClick={() => setShowClearModal(true)} title="Clear Recent History">
-                                        <Trash2 size={16} style={{ marginRight: 6 }} /> Clear All
+                                    <Button 
+                                        className={styles.clearAllBtn}
+                                        onClick={() => setShowClearModal(true)} 
+                                        title="Clear Recent History"
+                                    >
+                                        <Trash2 size={16} /> Clear All
                                     </Button>
                                 )}
                             </div>
@@ -333,8 +394,8 @@ export default function AttendanceScannerPage() {
                                                 <span className={styles.sessionCount}>({sessions.length} {sessions.length === 1 ? 'session' : 'sessions'})</span>
                                             </div>
                                             {sessions.map((session: any) => {
-                                                const totalStudents = session.section?._count?.users || 0;
-                                                const rate = totalStudents > 0 ? Math.round((session._count?.attendanceRecords / totalStudents) * 100) : 0;
+                                                const totalStudents = session.section?.studentCount || 0;
+                                                const rate = totalStudents > 0 ? Math.round((session.attendanceCount / totalStudents) * 100) : 0;
                                                 
                                                 const getBadgeStyle = (r: number) => {
                                                     if (r >= 85) return { background: '#064E3B', color: '#34D399' };
@@ -355,7 +416,7 @@ export default function AttendanceScannerPage() {
                                                             <div>
                                                                 <div className={styles.sessionTop}>
                                                                     <span className={styles.sessionName}>
-                                                                        {format(new Date(session.createdAt), 'd MMMM yyyy, h:mm a')}
+                                                                        {safeFormatDate(session.createdAt, 'd MMMM yyyy, h:mm a')}
                                                                     </span>
                                                                     <span className={session.isActive ? styles.statusActive : styles.statusEnded}>
                                                                         {session.isActive ? 'Active' : 'Ended'}
@@ -364,7 +425,7 @@ export default function AttendanceScannerPage() {
                                                                 <div className={styles.sessionMeta}>
                                                                     <span>By {session.createdBy?.name}</span>
                                                                     <span className={styles.dot}>•</span>
-                                                                    <span>{session.id.slice(-8).toUpperCase()}</span>
+                                                                    <span>{String(session.id).slice(-8).toUpperCase()}</span>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -426,7 +487,7 @@ export default function AttendanceScannerPage() {
                                                                 </div>
                                                             </div>
                                                         </td>
-                                                        <td>{record.deviceFingerprint === 'NOT_SCANNED' ? '-' : new Date(record.markedAt).toLocaleTimeString()}</td>
+                                                        <td>{record.deviceFingerprint === 'NOT_SCANNED' ? '-' : safeFormatTime(record.markedAt)}</td>
                                                         <td>
                                                             <span className={record.status === 'PRESENT' ? styles.badgePresent : styles.badgeAbsent}>
                                                                 {record.status === 'PRESENT' ? <UserCheck size={12} /> : <UserX size={12} />}
@@ -446,7 +507,7 @@ export default function AttendanceScannerPage() {
                                     <h3>Session Info</h3>
                                     <div className={styles.infoRow}>
                                         <label>ID</label>
-                                        <span>{selectedSession.id.slice(0, 12)}...</span>
+                                        <span>{String(selectedSession.id).slice(0, 12)}...</span>
                                     </div>
                                     <div className={styles.infoRow}>
                                         <label>Section</label>
@@ -498,14 +559,12 @@ export default function AttendanceScannerPage() {
             <div className={styles.header}>
                 <h1 className={styles.title}>Mark Your Attendance</h1>
                 <p className={styles.subtitle}>
-                    {isManual
-                        ? 'Enter the security token from the projector'
-                        : 'Align the QR code on the projector within the frame'}
+                    Align the QR code on the projector within the frame
                 </p>
             </div>
 
             <div className={styles.scannerCard}>
-                {!isManual && status === 'idle' ? (
+                {status === 'idle' ? (
                     <div className={styles.scannerWrapper}>
                         <div id="reader" className={styles.reader}></div>
                         <div className={styles.scanOverlay}>
@@ -513,32 +572,13 @@ export default function AttendanceScannerPage() {
                         </div>
                     </div>
                 ) : (
-                    <>
-                        <div className={styles.iconWrapper}>
-                            {status === 'success' ? (
-                                <CheckCircle2 size={64} className={styles.mainIcon} style={{ color: '#22c55e' }} />
-                            ) : (
-                                <ScanFace size={64} className={styles.mainIcon} />
-                            )}
-                        </div>
-
-                        {status !== 'success' && (
-                            <form onSubmit={(e) => { e.preventDefault(); handleMarkAttendance(token); }} className={styles.form}>
-                                <Input
-                                    label="Security Token"
-                                    type="text"
-                                    placeholder="Enter token manually..."
-                                    value={token}
-                                    onChange={(e) => setToken(e.target.value)}
-                                    required
-                                />
-
-                                <Button type="submit" loading={loading} style={{ marginTop: '10px' }}>
-                                    Confirm Token
-                                </Button>
-                            </form>
+                    <div className={styles.iconWrapper}>
+                        {status === 'success' ? (
+                            <CheckCircle2 size={64} className={styles.mainIcon} style={{ color: '#22c55e' }} />
+                        ) : (
+                            <ScanFace size={64} className={styles.mainIcon} />
                         )}
-                    </>
+                    </div>
                 )}
 
                 {status === 'success' && (
@@ -574,20 +614,6 @@ export default function AttendanceScannerPage() {
                         </div>
                     </div>
                 )}
-
-                <button
-                    className={styles.manualToggle}
-                    onClick={() => {
-                        setIsManual(!isManual);
-                        setStatus('idle');
-                    }}
-                >
-                    {isManual ? (
-                        <><Camera size={14} style={{ marginRight: 6 }} /> Use Camera Scanner</>
-                    ) : (
-                        <><Keyboard size={14} style={{ marginRight: 6 }} /> Enter Token Manually</>
-                    )}
-                </button>
 
                 <div className={styles.fingerprintDisclaimer}>
                     <p>Anti-Proxy ID: <code>{deviceFingerprint}</code></p>

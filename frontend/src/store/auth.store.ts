@@ -53,7 +53,7 @@ export const useAuthStore = create<AuthState>()(
                 localStorage.setItem('accessToken', accessToken);
                 localStorage.setItem('refreshToken', refreshToken);
 
-                set({ user, accessToken, refreshToken, isAuthenticated: true });
+                set({ user, accessToken, refreshToken, isAuthenticated: true, isHydrated: true });
             },
             logout: () => {
                 Cookies.remove('accessToken', { path: '/' });

@@ -130,22 +130,22 @@
 
 .qrWrapper {
     position: relative;
-    width: 300px;
-    height: 300px;
+    width: 480px;
+    height: 480px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 12px;
+    margin-bottom: 24px;
 }
 
 .qrInner {
-    width: 280px;
-    height: 280px;
+    width: 440px;
+    height: 440px;
     background: white;
-    padding: 16px;
-    border-radius: 24px;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
-    transition: opacity 0.2s ease;
+    padding: 20px;
+    border-radius: 32px;
+    box-shadow: 0 12px 64px rgba(0, 0, 0, 0.5);
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -327,6 +327,127 @@
 .text-green { color: #10B981; }
 .text-red { color: #EF4444; }
 .text-gray { color: var(--text-muted); }
+
+.tableWrapper {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+}
+
+.attendanceTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    text-align: left;
+}
+
+.attendanceTable thead {
+    background: rgba(255, 255, 255, 0.03);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.attendanceTable th {
+    padding: 16px;
+    font-weight: 700;
+    color: var(--text-muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-bottom: 1px solid var(--border);
+}
+
+.attendanceTable tbody {
+    display: block;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Fix for table header alignment with scrollbar */
+.attendanceTable thead, .attendanceTable tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.attendanceTable td {
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    color: var(--text-primary);
+    vertical-align: middle;
+}
+
+.colNo { 
+    width: 80px; 
+    text-align: center; 
+}
+
+.colName { 
+    text-align: left; 
+}
+
+.colStatus { 
+    width: 140px; 
+    text-align: center; 
+}
+
+.attendanceTable tr:last-child td {
+    border-bottom: none;
+}
+
+.attendanceTable tr:hover {
+    background: rgba(127, 119, 221, 0.05);
+}
+
+.presentRow {
+    background: rgba(16, 185, 129, 0.03) !important;
+}
+
+.tableAvatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: #7F77DD;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    color: white;
+}
+
+.statusBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.statusPresent {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10B981;
+}
+
+.statusAbsent {
+    background: rgba(239, 68, 68, 0.1);
+    color: #EF4444;
+}
+
+.statusAbsentPlaceholder {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.4);
+    min-width: 40px;
+    justify-content: center;
+}
 
 .loading {
     display: flex;

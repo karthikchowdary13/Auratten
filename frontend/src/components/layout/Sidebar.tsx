@@ -39,7 +39,7 @@ export default function Sidebar() {
                 return [
                     ...baseItems,
                     { name: 'Scan Attendance', icon: QrCode, href: '/dashboard/attendance' },
-                    { name: 'My History', icon: Calendar, href: '/dashboard/attendance' },
+                    { name: 'My History', icon: Calendar, href: '/dashboard/history' },
                     { name: 'Reports', icon: BarChart3, href: '/dashboard/reports' },
                 ];
             case 'TEACHER':
@@ -82,8 +82,12 @@ export default function Sidebar() {
             {/* Header - Fixed Height and Absolute Positioning for Sync */}
             <div className="h-24 flex items-center relative w-full">
                 <Link href="/dashboard" className="absolute left-4 flex items-center gap-3 group cursor-pointer transition-opacity hover:opacity-80">
-                    <div className="flex-shrink-0 w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-[750ms]">
-                        <GraduationCap size={24} />
+                    <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center overflow-hidden transition-all duration-[750ms]">
+                        <img 
+                            src="/auratten-logos/logo-main.png" 
+                            alt="Auratten Logo" 
+                            style={{ width: '28px', height: '28px', objectFit: 'contain' }} 
+                        />
                     </div>
                     <span className={cn(
                         "text-xl font-bold tracking-tight transition-all duration-[750ms] overflow-hidden whitespace-nowrap text-white",

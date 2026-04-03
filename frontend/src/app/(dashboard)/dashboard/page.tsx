@@ -80,9 +80,9 @@ export default function DashboardPage() {
     };
 
     const statCards = [
-        { label: 'Active QR Sessions', value: stats.activeSessions.toString(), icon: QrCode, color: '#6c63ff' },
-        { label: 'Total Users', value: stats.totalUsers.toString(), icon: Users, color: '#22c55e' },
-        { label: 'Attendance Today', value: stats.attendanceToday.toString(), icon: ClipboardCheck, color: '#f59e0b' },
+        { label: 'Active QR Sessions', value: (stats.activeSessions ?? 0).toString(), icon: QrCode, color: '#6c63ff' },
+        { label: 'Total Users', value: (stats.totalUsers ?? 0).toString(), icon: Users, color: '#22c55e' },
+        { label: 'Attendance Today', value: (stats.attendanceToday ?? 0).toString(), icon: ClipboardCheck, color: '#f59e0b' },
         { label: 'My Attendance Rate', value: user?.role === 'STUDENT' ? (stats as any).avgAttendance || '0%' : (stats as any).avgAttendance || '0%', icon: BarChart2, color: '#a78bfa' },
     ];
 

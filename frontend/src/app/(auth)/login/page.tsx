@@ -3,41 +3,35 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button, Input, Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui';
 import { authApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth.store';
 import { saveAuthSession } from '@/lib/auth';
 import { Shield, Mail, Lock, Loader2 } from 'lucide-react';
-
-const loginSchema = z.object({
-    email: z.string().email({ message: "Invalid email address" }),
-    password: z.string().min(6, { message: "Password must be at least 6 characters" }),
-});
-
-type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
     const router = useRouter();
     const setAuth = useAuthStore((state) => state.setAuth);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<LoginFormValues>({
-        resolver: zodResolver(loginSchema),
-    });
+    const handleLogin = async (e: React.FormEvent) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        if (!email || !password) {
+            setError('Please fill in all fields');
+            return;
+        }
 
-    const onSubmit = async (data: LoginFormValues) => {
         setLoading(true);
         setError(null);
+
         try {
-            const response = await authApi.login(data);
+            const response = await authApi.login({ email, password });
             
             if (response.error) {
                 setError(response.error);
@@ -46,17 +40,13 @@ export default function LoginPage() {
             }
 
             const { user, accessToken, refreshToken } = response.data;
-
-            // Sync all auth layers
             saveAuthSession(accessToken, refreshToken, user);
             setAuth(user, accessToken, refreshToken);
 
             const dashboardMap: Record<string, string> = {
-                STUDENT: '/student/dashboard',
-                TEACHER: '/teacher/dashboard',
-                PARENT: '/parent/dashboard',
-                ADMIN: '/admin/dashboard',
-                HR: '/hr/dashboard',
+                STUDENT: '/dashboard', // User requested redirect to dashboard
+                TEACHER: '/dashboard',
+                ADMIN: '/dashboard',
             };
 
             router.push(dashboardMap[user.role] || '/dashboard');
@@ -68,83 +58,93 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-8 bg-background">
+        <div className="min-h-screen flex items-center justify-center p-8 bg-black relative">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(108,99,255,0.05),transparent)] pointer-events-none" />
 
-            <Card className="w-full max-w-xl border-border/50 bg-card/50 backdrop-blur-xl shadow-[0_0_50px_rgba(0,0,0,0.3)]">
-                <CardHeader className="space-y-6 text-center pt-10">
-                    <div className="flex justify-center mb-6">
-                        <div className="p-4 rounded-3xl bg-primary/10 text-primary">
-                            <Shield size={40} />
+            <div className="w-full max-w-xl border border-white/10 bg-white/5 backdrop-blur-xl rounded-[2rem] shadow-2xl p-10 relative z-10">
+                <div className="space-y-6 text-center mb-10">
+                    <div className="flex justify-center">
+                        <div className="p-4 rounded-3xl bg-primary/10 overflow-hidden">
+                            <img 
+                                src="/auratten-logos/logo-main.png" 
+                                alt="Auratten Logo" 
+                                style={{ width: '80px', height: '80px', objectFit: 'contain' }} 
+                            />
                         </div>
                     </div>
-                    <CardTitle className="text-4xl font-bold tracking-tight">Welcome back</CardTitle>
-                    <CardDescription className="text-base">
-                        Enter your credentials to access your account
-                    </CardDescription>
-                </CardHeader>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    <CardContent className="space-y-8 px-10">
-                        {error && (
-                            <div className="p-3 rounded-md bg-destructive/10 border border-destructive/20 text-destructive text-sm font-medium">
-                                {error}
-                            </div>
-                        )}
+                    <div>
+                        <h1 className="text-4xl font-bold tracking-tight text-white mb-2">Welcome back</h1>
+                        <p className="text-white/50">Enter your credentials to access your account</p>
+                    </div>
+                </div>
 
-                        <div className="space-y-2">
-                            <div className="relative">
-                                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                    {...register('email')}
-                                    placeholder="name@institution.com"
-                                    className="pl-10 h-12 bg-background/50 border-border/50 focus:border-primary/50 transition-all font-medium"
-                                    type="email"
-                                    disabled={loading}
-                                />
-                            </div>
-                        </div>
+                {error && (
+                    <div className="mb-8 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm font-medium">
+                        {error}
+                    </div>
+                )}
 
-                        <div className="space-y-2">
-                            <div className="relative">
-                                <Lock className="absolute left-3 top-4 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                    {...register('password')}
-                                    placeholder="••••••••"
-                                    type="password"
-                                    className="pl-10 h-12 bg-background/50 border-border/50 focus:border-primary/50 transition-all font-medium"
-                                    disabled={loading}
-                                />
-                            </div>
-                            {errors.password && (
-                                <p className="text-xs text-destructive">{errors.password.message}</p>
-                            )}
+                <div className="space-y-6">
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-white/70 ml-1">Institution Email</label>
+                        <div className="relative">
+                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/30" />
+                            <input
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="name@institution.com"
+                                className="w-full pl-12 pr-4 h-14 bg-white/5 border border-white/10 rounded-2xl focus:border-primary/50 focus:bg-white/10 transition-all outline-none text-white font-medium"
+                                type="email"
+                                required
+                                disabled={loading}
+                                onKeyDown={(e) => e.key === 'Enter' && handleLogin(e as any)}
+                            />
                         </div>
-                    </CardContent>
-                    <CardFooter className="flex flex-col space-y-8 px-10 pb-12">
-                        <Button
-                            type="submit"
-                            className="w-full h-12 text-base font-semibold shadow-lg shadow-primary/20"
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-white/70 ml-1">Secure Password</label>
+                        <div className="relative">
+                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/30" />
+                            <input
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="••••••••"
+                                type="password"
+                                className="w-full pl-12 pr-4 h-14 bg-white/5 border border-white/10 rounded-2xl focus:border-primary/50 focus:bg-white/10 transition-all outline-none text-white font-medium"
+                                required
+                                disabled={loading}
+                                onKeyDown={(e) => e.key === 'Enter' && handleLogin(e as any)}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="pt-4">
+                        <button
+                            type="button"
+                            onClick={(e) => handleLogin(e as any)}
+                            className="w-full h-14 bg-primary hover:bg-primary/90 text-white rounded-2xl text-lg font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2"
                             disabled={loading}
                         >
                             {loading ? (
                                 <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    <Loader2 className="h-5 w-5 animate-spin" />
                                     Authenticating...
                                 </>
                             ) : (
                                 'Sign In'
                             )}
-                        </Button>
+                        </button>
+                    </div>
 
-                        <p className="text-center text-sm text-muted-foreground">
-                            Don&apos;t have an account?{' '}
-                            <Link href="/register" className="text-primary hover:underline font-medium">
-                                Sign up
-                            </Link>
-                        </p>
-                    </CardFooter>
-                </form>
-            </Card>
+                    <p className="text-center text-sm text-white/40 pt-4">
+                        Don&apos;t have an account?{' '}
+                        <Link href="/register" className="text-primary hover:text-primary/80 hover:underline font-bold transition-colors">
+                            Sign up
+                        </Link>
+                    </p>
+                </div>
+            </div>
         </div>
     );
 }

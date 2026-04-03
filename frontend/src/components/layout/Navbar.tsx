@@ -10,7 +10,11 @@ export default function Navbar() {
         <nav className={styles.navbar}>
             <div className={styles.inner}>
                 <Link href="/" className={styles.logo}>
-                    <QrCode size={22} color="var(--accent)" />
+                    <img 
+                        src="/auratten-logos/logo-website.png" 
+                        alt="Auratten Logo" 
+                        style={{ height: '32px', width: 'auto', objectFit: 'contain' }} 
+                    />
                     <span>Auratten</span>
                 </Link>
                 <div className={styles.actions}>

@@ -17,15 +17,10 @@ import {
     Activity
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { attendanceApi } from '@/lib/api';
+import { attendanceApi, sectionsApi } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-
-const myClasses = [
-    { id: 1, name: 'Grade 10 - Mathematics', students: 45, session: '09:00 AM - 10:00 AM', status: 'ACTIVE' },
-    { id: 2, name: 'Grade 12 - Physics', students: 38, session: '11:00 AM - 12:00 PM', status: 'COMPLETED' },
-    { id: 3, name: 'Grade 11 - Computing', students: 42, session: '02:00 PM - 03:00 PM', status: 'UPCOMING' },
-];
+import { useState, useEffect } from 'react';
 
 const pendingAlerts = [
     { id: 1, student: 'John Doe', reason: 'Absent for 3 consecutive days', type: 'WARNING' },
@@ -37,7 +32,7 @@ export default function TeacherDashboard() {
     const user = useAuthStore((state) => state.user);
     const router = useRouter();
 
-    const { data: dashboardData, isLoading } = useQuery({
+    const { data: dashboardData, isLoading: statsLoading } = useQuery({
         queryKey: ['teacherDashboard', user?.institutionId],
         queryFn: async () => {
             const { data } = await attendanceApi.getAnalytics(user?.institutionId || undefined);
@@ -45,7 +40,18 @@ export default function TeacherDashboard() {
         },
         refetchInterval: 30000,
         refetchOnWindowFocus: false,
+        refetchOnMount: true,
         staleTime: 25000,
+    });
+
+    const { data: sections, isLoading: sectionsLoading } = useQuery({
+        queryKey: ['teacherSections', user?.institutionId],
+        queryFn: async () => {
+            if (!user?.institutionId) return [];
+            const { data } = await sectionsApi.getByInstitution(user.institutionId);
+            return data || [];
+        },
+        enabled: !!user?.institutionId
     });
 
     const statsData = dashboardData?.stats || {
@@ -63,7 +69,7 @@ export default function TeacherDashboard() {
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Teacher Dashboard</h1>
                     <p className="text-muted-foreground mt-1">
-                        Manage your classes and monitor student attendance.
+                        Manage your {sections?.length || 0} classes and monitor student attendance.
                     </p>
                 </div>
                 <div className="flex gap-3">
@@ -88,8 +94,8 @@ export default function TeacherDashboard() {
                         <Users size={16} className="text-primary" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{isLoading ? '...' : statsData.totalUsers}</div>
-                        <p className="text-xs text-muted-foreground mt-1">Across {myClasses.length} classes</p>
+                        <div className="text-2xl font-bold">{statsLoading ? '...' : statsData.totalUsers}</div>
+                        <p className="text-xs text-muted-foreground mt-1">Across {sections?.length || 0} classes</p>
                     </CardContent>
                 </Card>
                 
@@ -99,7 +105,7 @@ export default function TeacherDashboard() {
                         <ClipboardCheck size={16} className="text-green-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{isLoading ? '...' : statsData.avgAttendance}</div>
+                        <div className="text-2xl font-bold">{statsLoading ? '...' : statsData.avgAttendance}</div>
                         {statsData.lastWeekTrend !== undefined && statsData.lastWeekTrend !== null && (
                             <div className={cn(
                                 "flex items-center gap-1 text-[10px] sm:text-xs mt-1 font-medium",
@@ -137,28 +143,36 @@ export default function TeacherDashboard() {
                                 <TableRow>
                                     <TableHead className="whitespace-nowrap">Class Name</TableHead>
                                     <TableHead className="whitespace-nowrap">Students</TableHead>
-                                    <TableHead className="whitespace-nowrap">Session Time</TableHead>
+                                    <TableHead className="whitespace-nowrap">Last Active</TableHead>
                                     <TableHead className="whitespace-nowrap">Status</TableHead>
                                     <TableHead className="text-right whitespace-nowrap">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {myClasses.map((cls) => (
+                                {sectionsLoading ? (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="text-center py-4 text-muted-foreground">Loading classes...</TableCell>
+                                    </TableRow>
+                                ) : (sections || []).map((cls) => (
                                     <TableRow key={cls.id}>
                                         <TableCell className="font-medium whitespace-nowrap">{cls.name}</TableCell>
-                                        <TableCell className="whitespace-nowrap">{cls.students}</TableCell>
-                                        <TableCell className="whitespace-nowrap">{cls.session}</TableCell>
+                                        <TableCell className="whitespace-nowrap">{cls.studentCount}</TableCell>
+                                        <TableCell className="whitespace-nowrap">
+                                            {cls.lastSessionAt ? new Date(cls.lastSessionAt).toLocaleString() : 'Never'}
+                                        </TableCell>
                                         <TableCell>
-                                            <Badge variant={
-                                                cls.status === 'ACTIVE' ? 'success' :
-                                                    cls.status === 'UPCOMING' ? 'secondary' : 'outline'
-                                            }>
-                                                {cls.status}
+                                            <Badge variant={cls.lastSessionAt ? 'success' : 'outline'}>
+                                                {cls.lastSessionAt ? 'ACTIVE' : 'IDLE'}
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            <Button variant="ghost" size="icon">
-                                                <MoreVertical size={16} />
+                                            <Button 
+                                                variant="ghost" 
+                                                size="sm"
+                                                onClick={() => router.push('/dashboard/qr')}
+                                            >
+                                                <QrCode size={14} className="mr-2" />
+                                                QR
                                             </Button>
                                         </TableCell>
                                     </TableRow>
@@ -213,7 +227,7 @@ export default function TeacherDashboard() {
                         <div className="flex items-center gap-3 mb-8">
                             <div className="w-3 h-3 rounded-full bg-green-500 pulse-green" />
                             <span className="text-5xl font-black tracking-tighter">
-                                {isLoading ? '...' : statsData.todayScans}
+                                {statsLoading ? '...' : statsData.todayScans}
                             </span>
                             <span className="text-sm font-medium text-muted-foreground self-end mb-1 capitalize">Total Scans</span>
                         </div>
@@ -221,7 +235,6 @@ export default function TeacherDashboard() {
                         {/* Hourly Pulse Chart */}
                         <div className="w-full h-24 mb-6 flex items-end justify-between px-2">
                             {(statsData.hourlyStats || []).map((hData: any, i: number) => {
-                                // Find max for scaling
                                 const max = Math.max(...(statsData.hourlyStats || []).map((d: any) => d.count), 5);
                                 const height = (hData.count / max) * 100;
                                 return (
@@ -249,4 +262,3 @@ export default function TeacherDashboard() {
         </div>
     );
 }
-

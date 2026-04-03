@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { clearAuthSession } from './auth';
+import Cookies from 'js-cookie';
 
 const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
@@ -73,8 +74,10 @@ api.interceptors.response.use(
 
                 if (typeof window !== 'undefined') {
                     localStorage.setItem('accessToken', data.accessToken);
+                    Cookies.set('accessToken', data.accessToken, { expires: 1, path: '/', sameSite: 'lax' });
                     if (data.refreshToken) {
                         localStorage.setItem('refreshToken', data.refreshToken);
+                        Cookies.set('refreshToken', data.refreshToken, { expires: 7, path: '/', sameSite: 'lax' });
                     }
                 }
 
@@ -163,11 +166,11 @@ export const attendanceApi = {
 
 export const qrApi = {
     createSession: (instId: string, duration: number, sectionId?: string): ApiResponse<any> =>
-        api.post('/qr', { institutionId: instId, expiresInMinutes: duration, sectionId: sectionId || undefined }),
+        api.post('/qr/', { institutionId: instId, expiresInMinutes: duration, sectionId: sectionId || undefined }),
     getActiveSessions: (instId: string): ApiResponse<any[]> => api.get(`/qr/institution/${instId}`),
     getHistory: (instId?: string): ApiResponse<any[]> => api.get(instId ? `/qr/history/${instId}` : '/qr/history'),
-    rotateToken: (sessionId: string): ApiResponse<any> => api.patch(`/qr/${sessionId}/rotate`),
-    endSession: (sessionId: string): ApiResponse<any> => api.patch(`/qr/${sessionId}/end`),
+    rotateToken: (sessionId: string): ApiResponse<any> => api.patch(`/qr/${sessionId}/rotate/`),
+    endSession: (sessionId: string): ApiResponse<any> => api.patch(`/qr/${sessionId}/end/`),
 };
 
 export const reportsApi = {
