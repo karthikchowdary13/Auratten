@@ -1,0 +1,85 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from config import settings
+
+from routes import auth, sections, users, qr
+from database import engine, Base
+import models.user 
+import models.section
+import models.qr_session
+import models.attendance
+
+# create database tables if they don't exist
+Base.metadata.create_all(bind=engine)
+
+# init our fastapi app
+app = FastAPI(
+    title="Auratten API",
+    description="QR Attendance Platform API",
+    version="0.1.0-beta",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    redirect_slashes=True
+)
+
+# cors setup (Top level)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3001", 
+        "http://127.0.0.1:3001",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "https://auratten.vercel.app",
+        "https://auratten-next.vercel.app",
+    ],
+    allow_origin_regex=r"https://auratten-.*\.vercel\.app", # Allow all Vercel preview deployments
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc):
+    import traceback
+    error_msg = f"Global Exception Hook: {str(exc)}"
+    print(error_msg)
+    print(traceback.format_exc())
+    from fastapi.responses import JSONResponse
+    
+    # Dynamically allow the requester's origin if it's in our allowed list
+    origin = request.headers.get("origin")
+    
+    return JSONResponse(
+        status_code=500,
+        content={"message": "An internal server error occurred", "detail": str(exc), "error": "InternalServerError"},
+        headers={
+            "Access-Control-Allow-Origin": origin if origin else "*",
+            "Access-Control-Allow-Credentials": "true"
+        }
+    )
+
+# register routers
+from routes import auth, sections, users, qr, attendance, dashboard, reports
+# ...
+app.include_router(auth.router)
+app.include_router(sections.router)
+app.include_router(users.router)
+app.include_router(qr.router)
+app.include_router(attendance.router)
+app.include_router(dashboard.router)
+app.include_router(reports.router)
+
+@app.get("/health")
+def health_check():
+    # basic health check to see if api is alive
+    return {"status": "ok"}
+
+@app.get("/")
+def home():
+    # root endpoint with welcome message
+    return {"message": "Welcome to Auratten API"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=3000, reload=True)
