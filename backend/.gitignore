@@ -38,3 +38,9 @@ lerna-debug.log*
 .env
 
 /generated/prisma
+
+*.log
+__pycache__/
+*.pyc
+.env
+server*.log
