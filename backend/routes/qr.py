@@ -21,7 +21,7 @@ def create_session(data: QRGenerate, db: Session = Depends(get_db), current_user
     try:
         print(f"Creating session for section {data.section_id} (requested by {current_user.email})")
         # only teachers/admins can start a session
-        if current_user.role not in ["teacher", "admin"]:
+        if current_user.role.lower() not in ["teacher", "admin"]:
             raise HTTPException(status_code=403, detail="Not authorized")
         
         # check if there's already an active session for this section

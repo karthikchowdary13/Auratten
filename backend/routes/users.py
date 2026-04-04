@@ -21,7 +21,7 @@ def list_users(
     current_user: User = Depends(get_current_user)
 ):
     # only admin/teacher can see all users
-    if current_user.role not in ["admin", "teacher"]:
+    if current_user.role.lower() not in ["admin", "teacher"]:
         raise HTTPException(status_code=403, detail="Not authorized")
     
     query = db.query(User)
@@ -52,7 +52,7 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
 @router.delete("/{user_id}")
 def delete_user(user_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     # only admins can delete users
-    if current_user.role != "admin":
+    if current_user.role.lower() != "admin":
         raise HTTPException(status_code=403, detail="Only admins can delete users")
         
     user = db.query(User).filter(User.id == user_id).first()
