@@ -15,7 +15,7 @@ router = APIRouter(prefix="/sections", tags=["sections"])
 @router.post("", response_model=SectionOut)
 def create_section(section: SectionCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     # only admin/teacher can create sections
-    if current_user.role not in ["admin", "teacher"]:
+    if current_user.role.lower() not in ["admin", "teacher"]:
         raise HTTPException(status_code=403, detail="Not authorized")
     
     # check if section name already exists
