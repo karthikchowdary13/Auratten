@@ -88,14 +88,18 @@ export default function QRSessionsPage() {
 
     // -- Section Loading --
     const loadData = async () => {
-        if (!user?.institutionId) return;
+        const instId = user?.institutionId || (user as any)?.institution_id;
+        if (!instId) {
+            setLoading(false);
+            return;
+        }
         setLoading(true);
         try {
-            const { data } = await sectionsApi.getByInstitution(user.institutionId);
+            const { data } = await sectionsApi.getByInstitution(instId);
             if (data) setSections(data);
             
             // Re-check for active sessions
-            const { data: activeRes } = await qrApi.getActiveSessions(user.institutionId);
+            const { data: activeRes } = await qrApi.getActiveSessions(instId);
             if (activeRes && activeRes.length > 0) {
                 // For simplicity, pick the first one or let user resume (existing logic was simplified to resume if found)
                 // But user wants "Redesign", I'll focus on the primary flow.
@@ -156,9 +160,10 @@ export default function QRSessionsPage() {
 
     // -- Actions --
     const startNewSession = async (sectionId: string) => {
-        if (!user?.institutionId) return;
+        const instId = user?.institutionId || (user as any)?.institution_id;
+        if (!instId) return;
         setStartingSectionId(sectionId);
-        const { data, error: apiErr } = await qrApi.createSession(user.institutionId, 60, sectionId);
+        const { data, error: apiErr } = await qrApi.createSession(instId, 60, sectionId);
         
         if (apiErr) {
             showToast('error', 'Failed to start session', apiErr);

@@ -63,6 +63,61 @@ def mark_attendance(
 
     return new_attendance
 
+from pydantic import BaseModel
+
+class TokenOnlyScan(BaseModel):
+    token: str
+
+@router.post("/mark-qr", response_model=AttendanceOut)
+def mark_attendance_qr(
+    scan_data: TokenOnlyScan,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    # find the active session by token in the database
+    session = db.query(QRSession).filter(
+        QRSession.token == scan_data.token,
+        QRSession.is_active == True
+    ).first()
+
+    if not session:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="invalid or expired qr code"
+        )
+        
+    # verify it matches the active token in memory fallback (redis) - handles immediate rotation
+    redis_key = f"qr_token:{session.section_id}"
+    valid_token = redis_client.get(redis_key)
+    
+    if valid_token and valid_token != scan_data.token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="qr code expired"
+        )
+
+    # check if student already marked
+    already_marked = db.query(Attendance).filter(
+        Attendance.user_id == current_user.id,
+        Attendance.session_id == session.id
+    ).first()
+
+    if already_marked:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="attendance already marked for this session"
+        )
+
+    new_attendance = Attendance(
+        user_id=current_user.id,
+        session_id=session.id
+    )
+    db.add(new_attendance)
+    db.commit()
+    db.refresh(new_attendance)
+
+    return new_attendance
+
 # get analytics for the dashboard
 @router.get("/analytics")
 def get_analytics(

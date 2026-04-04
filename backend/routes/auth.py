@@ -51,7 +51,8 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
         email=user_data.email,
         mobile_number=user_data.mobileNumber,
         password=hashed_password,
-        role=user_data.role
+        role=user_data.role,
+        institution_id="auratten_main"
     )
     
     db.add(new_user)

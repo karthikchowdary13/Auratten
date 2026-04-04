@@ -8,6 +8,7 @@ interface User {
     name: string;
     role: 'STUDENT' | 'TEACHER' | 'PARENT' | 'ADMIN' | 'HR';
     institutionId: string | null;
+    sectionId?: string | null;
     avatar?: string | null;
     mobileNumber?: string | null;
     updatedAt: string;
@@ -42,7 +43,15 @@ export const useAuthStore = create<AuthState>()(
             refreshToken: null,
             isAuthenticated: false,
             isHydrated: false,
-            setAuth: (user, accessToken, refreshToken) => {
+            setAuth: (rawUser, accessToken, refreshToken) => {
+                const user = { ...rawUser };
+                if ('institution_id' in user && !user.institutionId) {
+                    user.institutionId = (user as any).institution_id as string;
+                }
+                if ('section_id' in user && !user.sectionId) {
+                    user.sectionId = (user as any).section_id as string;
+                }
+                
                 // Sync with cookies for middleware/SSR 
                 Cookies.set('accessToken', accessToken, { expires: 1, path: '/' });
                 Cookies.set('refreshToken', refreshToken, { expires: 7, path: '/' });
@@ -67,7 +76,14 @@ export const useAuthStore = create<AuthState>()(
             },
             updateUser: (userData) =>
                 set((state) => {
-                    const newUser = state.user ? { ...state.user, ...userData } : null;
+                    const uData = { ...userData };
+                    if ('institution_id' in uData && !uData.institutionId) {
+                        uData.institutionId = (uData as any).institution_id;
+                    }
+                    if ('section_id' in uData && !uData.sectionId) {
+                        uData.sectionId = (uData as any).section_id;
+                    }
+                    const newUser = state.user ? { ...state.user, ...uData } : null;
                     if (newUser) localStorage.setItem(LEGACY_USER_KEY, JSON.stringify(newUser));
                     return { user: newUser };
                 }),

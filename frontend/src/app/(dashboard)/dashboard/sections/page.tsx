@@ -34,9 +34,10 @@ export default function SectionsPage() {
     const [studentsLoading, setStudentsLoading] = useState(false);
 
     const loadSections = async () => {
-        if (!user?.institutionId) return;
+        const instId = user?.institutionId || (user as any)?.institution_id;
+        if (!instId) return;
         setLoading(true);
-        const { data, error: apiErr } = await sectionsApi.getByInstitution(user.institutionId);
+        const { data, error: apiErr } = await sectionsApi.getByInstitution(instId);
         if (apiErr) setError(apiErr);
         else setSections(data || []);
         setLoading(false);
@@ -63,7 +64,8 @@ export default function SectionsPage() {
     }, [sections]);
 
     const handleCreateSection = async (password: string) => {
-        if (!newSectionName.trim() || !user?.institutionId) return;
+        const instId = user?.institutionId || (user as any)?.institution_id;
+        if (!newSectionName.trim() || !instId) return;
         setCreateLoading(true);
         try {
             const { error: verifyErr } = await authApi.verifyPassword(password);
@@ -72,7 +74,7 @@ export default function SectionsPage() {
                 return;
             }
 
-            const { error: apiErr } = await sectionsApi.create(user.institutionId, newSectionName.trim());
+            const { error: apiErr } = await sectionsApi.create(instId, newSectionName.trim());
             if (apiErr) {
                 showToast('error', 'Failed to create section', apiErr);
             } else {
@@ -113,7 +115,8 @@ export default function SectionsPage() {
         setStudentsLoading(true);
         setStudents([]);
 
-        const { data, error } = await usersApi.findAll(user?.institutionId || '', section.id);
+        const instId = user?.institutionId || (user as any)?.institution_id;
+        const { data, error } = await usersApi.findAll(instId || '', section.id);
         if (data) {
             setStudents(data);
         } else if (error) {
@@ -157,7 +160,8 @@ export default function SectionsPage() {
         );
     }
 
-    if (!user?.institutionId) {
+    const currentInstId = user?.institutionId || (user as any)?.institution_id;
+    if (!currentInstId) {
         return (
             <div className={styles.container}>
                 <div className={styles.emptyCard} style={{ marginTop: 100 }}>
