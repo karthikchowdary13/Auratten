@@ -3,7 +3,7 @@ import { clearAuthSession } from './auth';
 import Cookies from 'js-cookie';
 
 const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
+    baseURL: process.env.NEXT_PUBLIC_API_BASE,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -57,7 +57,6 @@ export type ApiResponse<T = any> = Promise<SuccessResponse<T> | ErrorResponse>;
 
 api.interceptors.response.use(
     (response) => {
-        // Wrap success data
         return { data: response.data, error: null } as any;
     },
     async (error) => {
@@ -66,15 +65,18 @@ api.interceptors.response.use(
             originalRequest._retry = true;
             try {
                 const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('refreshToken') : null;
-                const refreshRes = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/auth/refresh`, {
-                    refreshToken,
-                });
+
+                const refreshRes = await axios.post(
+                    `${process.env.NEXT_PUBLIC_API_BASE}/auth/refresh`,
+                    { refreshToken }
+                );
 
                 const data = refreshRes.data;
 
                 if (typeof window !== 'undefined') {
                     localStorage.setItem('accessToken', data.accessToken);
                     Cookies.set('accessToken', data.accessToken, { expires: 1, path: '/', sameSite: 'lax' });
+
                     if (data.refreshToken) {
                         localStorage.setItem('refreshToken', data.refreshToken);
                         Cookies.set('refreshToken', data.refreshToken, { expires: 7, path: '/', sameSite: 'lax' });
@@ -93,8 +95,16 @@ api.interceptors.response.use(
             }
         }
 
-        const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || 'An error occurred';
-        return { data: null, error: typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage) } as any;
+        const errorMessage =
+            error.response?.data?.message ||
+            error.response?.data?.error ||
+            error.message ||
+            'An error occurred';
+
+        return {
+            data: null,
+            error: typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage),
+        } as any;
     }
 );
 
@@ -109,10 +119,13 @@ export const authApi = {
     login: (credentials: LoginCredentials): ApiResponse => api.post('/auth/login', credentials),
     register: (data: any): ApiResponse => api.post('/auth/register', data),
     getProfile: (): ApiResponse<AuthUser> => api.get('/auth/me'),
-    verifyPassword: (password: string): ApiResponse<{ valid: boolean }> => api.post('/auth/verify-password', { password }),
+    verifyPassword: (password: string): ApiResponse<{ valid: boolean }> =>
+        api.post('/auth/verify-password', { password }),
     changePassword: (data: any): ApiResponse => api.post('/change-password', data),
-    sendOtp: (identifier: string, type: 'EMAIL' | 'MOBILE'): ApiResponse<{ success: boolean }> => api.post('/auth/send-auth-otp', { identifier, type }),
-    verifyOtp: (identifier: string, code: string, type: 'EMAIL' | 'MOBILE'): ApiResponse<{ success: boolean }> => api.post('/auth/verify-auth-otp', { identifier, code, type }),
+    sendOtp: (identifier: string, type: 'EMAIL' | 'MOBILE'): ApiResponse<{ success: boolean }> =>
+        api.post('/auth/send-auth-otp', { identifier, type }),
+    verifyOtp: (identifier: string, code: string, type: 'EMAIL' | 'MOBILE'): ApiResponse<{ success: boolean }> =>
+        api.post('/auth/verify-auth-otp', { identifier, code, type }),
 };
 
 export const institutionsApi = {
@@ -124,8 +137,10 @@ export const institutionsApi = {
 };
 
 export const sectionsApi = {
-    getByInstitution: (instId: string): ApiResponse<any[]> => api.get(`/sections/institution/${instId}`),
-    create: (institutionId: string, name: string): ApiResponse<any> => api.post('/sections', { institutionId, name }),
+    getByInstitution: (instId: string): ApiResponse<any[]> =>
+        api.get(`/sections/institution/${instId}`),
+    create: (institutionId: string, name: string): ApiResponse<any> =>
+        api.post('/sections', { institutionId, name }),
     delete: (id: string): ApiResponse<any> => api.delete(`/sections/${id}`),
 };
 
@@ -136,24 +151,35 @@ export const usersApi = {
         if (sectionId) params.append('sectionId', sectionId);
         return api.get(`/users?${params.toString()}`);
     },
-    update: (id: string, data: any): ApiResponse<AuthUser> => api.patch(`/users/${id}`, data),
+    update: (id: string, data: any): ApiResponse<AuthUser> =>
+        api.patch(`/users/${id}`, data),
     uploadAvatar: (id: string, file: File): ApiResponse<{ avatarUrl: string }> => {
         const formData = new FormData();
         formData.append('file', file);
         return api.patch(`/users/${id}/avatar`, formData);
     },
-    delete: (id: string, password?: string): ApiResponse<any> => 
+    delete: (id: string, password?: string): ApiResponse<any> =>
         api.delete(`/users/${id}`, password ? { data: { password } } : undefined),
 };
 
 export const attendanceApi = {
-    markByQR: (token: string): ApiResponse<any> => api.post('/attendance/mark-qr', { token }),
-    markAttendance: (data: { token: string; deviceFingerprint: string }): ApiResponse<any> => api.post('/attendance/mark', data),
-    getSessionAttendance: (sessionId: string): ApiResponse<any[]> => api.get(`/attendance/session/${sessionId}`),
+    markByQR: (token: string): ApiResponse<any> =>
+        api.post('/attendance/mark-qr', { token }),
+    markAttendance: (data: { token: string; deviceFingerprint: string }): ApiResponse<any> =>
+        api.post('/attendance/mark', data),
+    getSessionAttendance: (sessionId: string): ApiResponse<any[]> =>
+        api.get(`/attendance/session/${sessionId}`),
     getStudentStats: (): ApiResponse<any> => api.get('/attendance/stats'),
-    getHistory: (instId?: string): ApiResponse<any> => api.get(instId ? `/attendance/history?institutionId=${instId}` : '/attendance/history'),
-    getRecent: (instId?: string): ApiResponse<any[]> => api.get(instId ? `/attendance/recent?institutionId=${instId}` : '/attendance/recent'),
-    getAnalytics: (instId?: string, sectionId?: string, startDate?: string, endDate?: string): ApiResponse<any> => {
+    getHistory: (instId?: string): ApiResponse<any> =>
+        api.get(instId ? `/attendance/history?institutionId=${instId}` : '/attendance/history'),
+    getRecent: (instId?: string): ApiResponse<any[]> =>
+        api.get(instId ? `/attendance/recent?institutionId=${instId}` : '/attendance/recent'),
+    getAnalytics: (
+        instId?: string,
+        sectionId?: string,
+        startDate?: string,
+        endDate?: string
+    ): ApiResponse<any> => {
         const params = new URLSearchParams();
         if (instId) params.append('institutionId', instId);
         if (sectionId) params.append('sectionId', sectionId);
@@ -161,21 +187,35 @@ export const attendanceApi = {
         if (endDate) params.append('endDate', endDate);
         return api.get(`/attendance/analytics?${params.toString()}`);
     },
-    getUserDetails: (id: string): ApiResponse<any> => api.get(`/attendance/user/${id}`),
+    getUserDetails: (id: string): ApiResponse<any> =>
+        api.get(`/attendance/user/${id}`),
 };
 
 export const qrApi = {
     createSession: (instId: string, duration: number, sectionId?: string): ApiResponse<any> =>
-        api.post('/qr/', { institutionId: instId, expiresInMinutes: duration, sectionId: sectionId || undefined }),
-    getActiveSessions: (instId: string): ApiResponse<any[]> => api.get(`/qr/institution/${instId}`),
-    getHistory: (instId?: string): ApiResponse<any[]> => api.get(instId ? `/qr/history/${instId}` : '/qr/history'),
-    rotateToken: (sessionId: string): ApiResponse<any> => api.patch(`/qr/${sessionId}/rotate/`),
-    endSession: (sessionId: string): ApiResponse<any> => api.patch(`/qr/${sessionId}/end/`),
+        api.post('/qr/', {
+            institutionId: instId,
+            expiresInMinutes: duration,
+            sectionId: sectionId || undefined,
+        }),
+    getActiveSessions: (instId: string): ApiResponse<any[]> =>
+        api.get(`/qr/institution/${instId}`),
+    getHistory: (instId?: string): ApiResponse<any[]> =>
+        api.get(instId ? `/qr/history/${instId}` : '/qr/history'),
+    rotateToken: (sessionId: string): ApiResponse<any> =>
+        api.patch(`/qr/${sessionId}/rotate/`),
+    endSession: (sessionId: string): ApiResponse<any> =>
+        api.patch(`/qr/${sessionId}/end/`),
 };
 
 export const reportsApi = {
-    downloadInstitutionPDF: (instId: string, startDate?: string, endDate?: string, sectionId?: string) => {
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+    downloadInstitutionPDF: (
+        instId: string,
+        startDate?: string,
+        endDate?: string,
+        sectionId?: string
+    ) => {
+        const baseUrl = process.env.NEXT_PUBLIC_API_BASE;
         const params = new URLSearchParams();
         if (startDate) params.append('startDate', startDate);
         if (endDate) params.append('endDate', endDate);
@@ -183,19 +223,20 @@ export const reportsApi = {
         return `${baseUrl}/reports/institution/${instId}/pdf?${params.toString()}`;
     },
     downloadStudentPDF: (studentId: string) => {
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+        const baseUrl = process.env.NEXT_PUBLIC_API_BASE;
         return `${baseUrl}/reports/student/${studentId}/pdf`;
-    }
+    },
 };
 
 export const notificationsApi = {
-    notifyParent: (studentId: string): ApiResponse => api.post(`/notifications/notify-parent/${studentId}`),
+    notifyParent: (studentId: string): ApiResponse =>
+        api.post(`/notifications/notify-parent/${studentId}`),
 };
 
 export const downloadFile = async (url: string, filename: string) => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
     const response = await fetch(url, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     if (!response.ok) throw new Error('Download failed');
     const blob = await response.blob();
