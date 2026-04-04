@@ -35,13 +35,15 @@ export default function RegisterPage() {
     const setAuth = useAuthStore((state) => state.setAuth);
 
     const onRegisterClick = async () => {
+        const BASE_URL = process.env.NEXT_PUBLIC_API_BASE;
+
         console.log('onRegisterClick started');
         setError(null);
         setLoading(true);
 
         try {
             console.log('Sending registration request...');
-            const response = await fetch('http://localhost:3000/auth/register', {
+            const response = await fetch(`${BASE_URL}/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, email, password, role, mobileNumber })
@@ -55,7 +57,7 @@ export default function RegisterPage() {
             }
 
             console.log('Attempting automatic login...');
-            const loginResponse = await fetch('http://localhost:3000/auth/login', {
+            const loginResponse = await fetch(`${BASE_URL}/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
