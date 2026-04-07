@@ -48,7 +48,7 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(User).filter(User.email == email).first()
     if db_user:
         print(f"Registration failed: Email {email} already exists")
-        raise HTTPException(status_code=400, detail="Email already registered")
+        raise HTTPException(status_code=400, detail={"message": "Email already registered"})
     
     hashed_password = get_password_hash(user_data.password)
     
@@ -81,7 +81,7 @@ def login(login_data: LoginRequest, db: Session = Depends(get_db)):
         print(f"Login failed for {email}: {'User not found' if not user else 'Invalid password'}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
+            detail={"message": "Incorrect email or password"},
             headers={"WWW-Authenticate": "Bearer"},
         )
     

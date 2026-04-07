@@ -4,7 +4,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from config import settings
 
 from routes import auth, sections, users, qr
-from database import engine, Base
+from database import engine, Base, SessionLocal
 import models.user 
 import models.section
 import models.qr_session

@@ -51,7 +51,8 @@ export default function LoginPage() {
 
             router.push(dashboardMap[user.role] || '/dashboard');
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Invalid email or password');
+            const msg = err.response?.data?.detail?.message || err.response?.data?.message || err.response?.data?.detail || 'Invalid email or password';
+            setError(msg);
         } finally {
             setLoading(false);
         }

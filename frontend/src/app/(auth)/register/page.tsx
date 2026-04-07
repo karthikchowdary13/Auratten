@@ -53,7 +53,8 @@ export default function RegisterPage() {
             console.log('Registration response:', regData);
 
             if (!response.ok) {
-                throw new Error(regData.detail || regData.message || 'Registration failed');
+                const errorMsg = regData.detail?.message || regData.message || regData.detail || 'Registration failed';
+                throw new Error(errorMsg);
             }
 
             console.log('Attempting automatic login...');
