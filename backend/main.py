@@ -13,22 +13,70 @@ import models.attendance
 # create database tables if they don't exist
 Base.metadata.create_all(bind=engine)
 
-# one-time migration to lowercase all emails for consistency
-def migrate_emails():
+# initialization to ensure 3 sections and 120 students exist
+def initialize_data():
     db = SessionLocal()
     try:
         from models.user import User
+        from models.section import Section, SectionStudent
+        from utils.auth import get_password_hash
+        
+        # 1. Lowercase existing emails
         users = db.query(User).all()
         for u in users:
             if u.email and u.email != u.email.lower():
                 u.email = u.email.lower().strip()
         db.commit()
+
+        # 2. Seed 3 sections x 40 students if roster is empty
+        institution_id = "auratten_main"
+        if db.query(User).filter(User.role == "student").count() < 100:
+            print("Seeding requested 120 students across 3 sections...")
+            password = get_password_hash("password123")
+            section_names = ["CS-101", "CS-102", "CS-103"]
+            
+            for s_name in section_names:
+                # Get or create section
+                section = db.query(Section).filter(Section.name == s_name).first()
+                if not section:
+                    section = Section(name=s_name, institution_id=institution_id)
+                    db.add(section)
+                    db.commit()
+                    db.refresh(section)
+                
+                # Create 40 students
+                for i in range(1, 41):
+                    email = f"student_{s_name.lower()}_{i}@auratten.io"
+                    name = f"Student {i} ({s_name})"
+                    
+                    user = db.query(User).filter(User.email == email).first()
+                    if not user:
+                        user = User(
+                            name=name,
+                            email=email,
+                            password=password,
+                            role="student",
+                            institution_id=institution_id
+                        )
+                        db.add(user)
+                        db.commit()
+                        db.refresh(user)
+                    
+                    # Link to section
+                    link = db.query(SectionStudent).filter(
+                        SectionStudent.section_id == section.id,
+                        SectionStudent.user_id == user.id
+                    ).first()
+                    if not link:
+                        db.add(SectionStudent(section_id=section.id, user_id=user.id))
+            db.commit()
+            print("Seeding complete.")
     except Exception as e:
-        print(f"Migration error: {e}")
+        print(f"Initialization error: {e}")
     finally:
         db.close()
 
-migrate_emails()
+initialize_data()
 
 # init our fastapi app
 app = FastAPI(
