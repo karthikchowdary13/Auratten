@@ -164,6 +164,7 @@ def get_session_attendance(
             "id": r.id,
             "userId": r.user_id,
             "markedAt": r.scanned_at,
+            "status": r.status,
             "user": {
                 "id": user.id if user else None,
                 "name": user.name if user else "Unknown",

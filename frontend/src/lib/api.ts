@@ -166,7 +166,7 @@ export const attendanceApi = {
     markByQR: (token: string): ApiResponse<any> =>
         api.post('/attendance/mark-qr', { token }),
     markAttendance: (data: { token: string; deviceFingerprint: string }): ApiResponse<any> =>
-        api.post('/attendance/mark', data),
+        api.post('/attendance/mark-qr', data),
     getSessionAttendance: (sessionId: string): ApiResponse<any[]> =>
         api.get(`/attendance/session/${sessionId}`),
     getStudentStats: (): ApiResponse<any> => api.get('/attendance/stats'),
