@@ -61,6 +61,13 @@ export default function QRSessionsPage() {
 
     const attendanceList = useMemo(() => Array.isArray(attendanceData) ? attendanceData : [], [attendanceData]);
 
+    const recentAttendants = useMemo(() => {
+        return [...attendanceList]
+            .filter(r => r.status === 'PRESENT')
+            .sort((a, b) => new Date(b.markedAt).getTime() - new Date(a.markedAt).getTime())
+            .slice(0, 6);
+    }, [attendanceList]);
+
     const fullRoster = useMemo(() => {
         if (!rosterData) return [];
         const presentIds = new Set(attendanceList.map((r: any) => r.userId || r.user?.id));
@@ -268,6 +275,42 @@ export default function QRSessionsPage() {
                                 <span>Auto-Refreshes in {Math.ceil(timeLeft)}s</span>
                             </div>
                             <p className={styles.qrFooterText}>Security tokens automatically cycle — proxy-proof</p>
+                        </div>
+
+                        {/* Recent Activity Feed */}
+                        <div className={styles.recentActivity}>
+                            <h3 className={styles.recentTitle}>
+                                <Activity size={16} className="text-primary" />
+                                Recently Marked Present
+                            </h3>
+                            <div className={styles.recentList}>
+                                {recentAttendants.length === 0 ? (
+                                    <div className={styles.recentEmpty}>
+                                        <div className={styles.pulseDot}></div>
+                                        <span>Waiting for students to scan...</span>
+                                    </div>
+                                ) : (
+                                    recentAttendants.map((record) => (
+                                        <div key={record.id} className={styles.recentItem}>
+                                            <div className="flex items-center gap-3">
+                                                <div className={styles.recentAvatar}>
+                                                    {record.user?.name?.[0] || 'S'}
+                                                </div>
+                                                <div className={styles.recentInfo}>
+                                                    <span className={styles.recentName}>{record.user?.name}</span>
+                                                    <span className={styles.recentTime}>
+                                                        {new Date(record.markedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className={styles.liveBadge}>
+                                                <div className={styles.liveDot}></div>
+                                                Present
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
                         </div>
                     </div>
 
