@@ -38,8 +38,8 @@ def create_session(data: QRGenerate, db: Session = Depends(get_db), current_user
         print(f"Generated token: {token}")
         
         redis_key = f"qr_token:{data.section_id}"
-        # using our fallback-enabled redis_client
-        redis_client.set(redis_key, token, ex=5)
+        # tokens cycle every 30s on frontend, so 60s expiry covers rotation lag
+        redis_client.set(redis_key, token, ex=60)
         
         new_session = QRSession(
             section_id=data.section_id,
@@ -50,6 +50,9 @@ def create_session(data: QRGenerate, db: Session = Depends(get_db), current_user
         db.add(new_session)
         db.commit()
         db.refresh(new_session)
+        
+        # Add required attribute for Pydantic validation
+        new_session.attendance_count = 0
         
         print(f"Session {new_session.id} created successfully")
         
@@ -111,7 +114,7 @@ def rotate_token(session_id: int, db: Session = Depends(get_db)):
     session.token = new_token
     
     redis_key = f"qr_token:{session.section_id}"
-    redis_client.set(redis_key, new_token, ex=5)
+    redis_client.set(redis_key, new_token, ex=60)
     
     db.commit()
     return {"token": new_token}

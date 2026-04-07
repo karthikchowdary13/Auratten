@@ -39,16 +39,22 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
 
 @router.post("/register", response_model=UserOut)
 def register(user_data: UserCreate, db: Session = Depends(get_db)):
+    # enforce lowercase for email consistency
+    email = user_data.email.lower().strip()
+    
+    print(f"Registering new user: {email} with role: {user_data.role}")
+    
     # check if email exists
-    db_user = db.query(User).filter(User.email == user_data.email).first()
+    db_user = db.query(User).filter(User.email == email).first()
     if db_user:
+        print(f"Registration failed: Email {email} already exists")
         raise HTTPException(status_code=400, detail="Email already registered")
     
     hashed_password = get_password_hash(user_data.password)
     
     new_user = User(
         name=user_data.name,
-        email=user_data.email,
+        email=email,
         mobile_number=user_data.mobileNumber,
         password=hashed_password,
         role=user_data.role,
@@ -62,16 +68,24 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 def login(login_data: LoginRequest, db: Session = Depends(get_db)):
+    # enforce lowercase for email consistency
+    email = login_data.email.lower().strip()
+    
+    print(f"Login attempt for email: {email}")
+    
     # verify credentials and return jwt token
-    user = db.query(User).filter(User.email == login_data.email).first()
+    user = db.query(User).filter(User.email == email).first()
     
     # check if user exists and password is correct
     if not user or not verify_password(login_data.password, user.password):
+        print(f"Login failed for {email}: {'User not found' if not user else 'Invalid password'}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    
+    print(f"Login successful for: {email} (ID: {user.id})")
     
     # generate the tokens
     access_token = create_access_token(
