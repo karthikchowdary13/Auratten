@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from config import settings
 
 from routes import auth, sections, users, qr
@@ -11,6 +12,23 @@ import models.attendance
 
 # create database tables if they don't exist
 Base.metadata.create_all(bind=engine)
+
+# one-time migration to lowercase all emails for consistency
+def migrate_emails():
+    db = SessionLocal()
+    try:
+        from models.user import User
+        users = db.query(User).all()
+        for u in users:
+            if u.email and u.email != u.email.lower():
+                u.email = u.email.lower().strip()
+        db.commit()
+    except Exception as e:
+        print(f"Migration error: {e}")
+    finally:
+        db.close()
+
+migrate_emails()
 
 # init our fastapi app
 app = FastAPI(
@@ -38,6 +56,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# compress responses
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):

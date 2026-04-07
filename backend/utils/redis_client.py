@@ -16,20 +16,21 @@ class RedisClient:
         self.connect()
 
     def connect(self):
+        if not settings.REDIS_HOST or settings.REDIS_HOST == "localhost":
+            # Don't even try if we are likely in a limited environment without redis
+            self.is_connected = False
+            return
+
         try:
-            # try connecting to redis
             self.client = redis.Redis(
                 host=settings.REDIS_HOST,
                 port=settings.REDIS_PORT,
                 decode_responses=True,
-                socket_timeout=1
+                socket_timeout=0.5 # Lower timeout for faster fallback
             )
-            # ping to check connection
             self.client.ping()
             self.is_connected = True
-            logger.info("Successfully connected to Redis")
-        except Exception as e:
-            logger.warning(f"Redis connection failed: {e}. Using in-memory fallback.")
+        except:
             self.is_connected = False
             self.client = None
 
