@@ -760,7 +760,46 @@
     gap: 8px;
 }
 
-.warningIcon {
-    color: #eab308;
-    margin-bottom: 12px;
+.cameraControls {
+    position: absolute;
+    bottom: 24px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    z-index: 20;
+    pointer-events: none;
 }
+
+.cameraToggleBtn {
+    pointer-events: auto;
+    background: rgba(108, 99, 255, 0.9);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(0);
+}
+
+.cameraToggleBtn:hover {
+    background: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(108, 99, 255, 0.4);
+}
+
+.cameraToggleBtn:active {
+    transform: scale(0.95);
+}
+
+.cameraToggleBtn svg {
+    opacity: 0.9;
+}

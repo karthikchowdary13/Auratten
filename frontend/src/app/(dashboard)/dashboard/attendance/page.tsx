@@ -27,7 +27,7 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import ConfirmPasswordModal from '@/components/ui/ConfirmPasswordModal';
 import styles from './attendance.module.css';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import { Html5Qrcode } from 'html5-qrcode';
 import { useToast } from '@/context/ToastContext';
 
 // Safe date formatting helpers to prevent RangeError
@@ -72,7 +72,9 @@ export default function AttendanceScannerPage() {
     const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
     const [message, setMessage] = useState('');
     const [deviceFingerprint, setDeviceFingerprint] = useState('');
-    const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+    const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
+    const [isScannerReady, setIsScannerReady] = useState(false);
+    const scannerRef = useRef<Html5Qrcode | null>(null);
 
     // Teacher/Admin State
     const [sessionHistory, setSessionHistory] = useState<any[]>([]);
@@ -121,31 +123,50 @@ export default function AttendanceScannerPage() {
         }
     }, [user]);
 
-    // --- Student Logic ---
+    // --- Student Logic (Camera Management) ---
     useEffect(() => {
         if (user?.role === 'STUDENT' && status === 'idle') {
-            const scanner = new Html5QrcodeScanner(
-                'reader',
-                { fps: 10, qrbox: { width: 250, height: 250 } },
-                /* verbose= */ false
-            );
+            const html5QrCode = new Html5Qrcode('reader');
+            scannerRef.current = html5QrCode;
 
-            scanner.render(onScanSuccess, onScanFailure);
-            scannerRef.current = scanner;
+            const startScanner = async () => {
+                try {
+                    await html5QrCode.start(
+                        { facingMode: facingMode },
+                        { fps: 10, qrbox: { width: 250, height: 250 } },
+                        (decodedText) => onScanSuccess(decodedText),
+                        (errorMessage) => { /* ignore normal scanning errors */ }
+                    );
+                    setIsScannerReady(true);
+                } catch (err) {
+                    console.error("Scanner start error:", err);
+                    showToast('error', 'Camera Error', 'Could not access the requested camera.');
+                }
+            };
+
+            startScanner();
         }
 
         return () => {
-            if (scannerRef.current) {
-                scannerRef.current.clear().catch(err => console.error('Failed to clear scanner', err));
-                scannerRef.current = null;
+            if (scannerRef.current && scannerRef.current.isScanning) {
+                scannerRef.current.stop()
+                    .catch(e => console.error("Scanner stop error:", e));
             }
         };
-    }, [user?.role, status]);
+    }, [user?.role, status, facingMode]);
+
+    const toggleCamera = async () => {
+        if (scannerRef.current && scannerRef.current.isScanning) {
+            setIsScannerReady(false);
+            await scannerRef.current.stop();
+            setFacingMode(prev => prev === 'user' ? 'environment' : 'user');
+        }
+    };
 
     async function onScanSuccess(decodedText: string) {
         if (loading) return;
-        if (scannerRef.current) {
-            try { await scannerRef.current.clear(); } catch (err) { console.error(err); }
+        if (scannerRef.current && scannerRef.current.isScanning) {
+            try { await scannerRef.current.stop(); } catch (err) { console.error(err); }
         }
         handleMarkAttendance(decodedText);
     }
@@ -566,7 +587,20 @@ export default function AttendanceScannerPage() {
             <div className={styles.scannerCard}>
                 {status === 'idle' ? (
                     <div className={styles.scannerWrapper}>
-                        <div id="reader" className={styles.reader}></div>
+                        <div id="reader" className={styles.reader} style={{ border: 'none' }}></div>
+                        
+                        {isScannerReady && (
+                            <div className={styles.cameraControls}>
+                                <button 
+                                    className={styles.cameraToggleBtn}
+                                    onClick={toggleCamera}
+                                >
+                                    <Camera size={20} />
+                                    {facingMode === 'user' ? 'Switch to Back Camera' : 'Switch to Front Camera'}
+                                </button>
+                            </div>
+                        )}
+
                         <div className={styles.scanOverlay}>
                             <div className={styles.scanLine}></div>
                         </div>
@@ -590,7 +624,10 @@ export default function AttendanceScannerPage() {
                             <Button
                                 variant="secondary"
                                 style={{ marginTop: 12, fontSize: 12, padding: '4px 12px' }}
-                                onClick={() => setStatus('idle')}
+                                onClick={() => {
+                                    setStatus('idle');
+                                    setIsScannerReady(false);
+                                }}
                             >
                                 Scan Again
                             </Button>
@@ -607,7 +644,10 @@ export default function AttendanceScannerPage() {
                             <Button
                                 variant="secondary"
                                 style={{ marginTop: 12, fontSize: 12, padding: '4px 12px', color: '#ef4444' }}
-                                onClick={() => setStatus('idle')}
+                                onClick={() => {
+                                    setStatus('idle');
+                                    setIsScannerReady(false);
+                                }}
                             >
                                 Try Again
                             </Button>
