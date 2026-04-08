@@ -26,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
-        <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Varela+Round&family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
         <link rel="icon" href="/auratten-logos/favicon.png" />
         <link rel="shortcut icon" href="/auratten-logos/favicon.png" />
         <link rel="apple-touch-icon" href="/auratten-logos/logo-mobile.png" />
