@@ -10,7 +10,12 @@ export default function Navbar() {
         <nav className={styles.navbar}>
             <div className={styles.inner}>
                 <Link href="/" className={styles.logo}>
-                    <span className={styles.wordmark}>auratten</span>
+                    <img 
+                        src="/auratten-logos/logo-website.png" 
+                        alt="Auratten Logo" 
+                        style={{ height: '36px', width: 'auto', objectFit: 'contain' }} 
+                    />
+                    <span className={styles.wordmark}>Auratten</span>
                 </Link>
                 <div className={styles.actions}>
                     <Link href="/login">
