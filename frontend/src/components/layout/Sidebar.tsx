@@ -31,7 +31,7 @@ export default function Sidebar() {
 
     const getMenuItems = () => {
         const baseItems = [
-            { name: 'Dashboard', icon: LayoutDashboard, href: `/${user?.role.toLowerCase()}/dashboard` },
+            { name: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
         ];
 
         switch (user?.role) {

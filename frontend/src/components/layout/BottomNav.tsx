@@ -13,7 +13,7 @@ import { useAuthStore } from '@/store/auth.store';
 import styles from './BottomNav.module.css';
 
 const getNavItems = (role: string) => [
-    { href: `/${role.toLowerCase()}/dashboard`, label: 'Home', icon: LayoutDashboard },
+    { href: '/dashboard', label: 'Home', icon: LayoutDashboard },
     { href: '/dashboard/qr', label: 'QR', icon: QrCode, roles: ['ADMIN', 'TEACHER'] },
     { href: '/dashboard/attendance', label: 'Scan', icon: QrCode, roles: ['STUDENT'] },
     { href: '/dashboard/reports', label: 'Reports', icon: BarChart2 },
