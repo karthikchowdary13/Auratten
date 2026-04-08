@@ -11,23 +11,33 @@ from routes.auth import get_current_user
 
 router = APIRouter(prefix="/sections", tags=["sections"])
 
-@router.post("/", response_model=SectionOut)
-@router.post("", response_model=SectionOut)
+@router.post("/", response_model=dict)
+@router.post("", response_model=dict)
 def create_section(section: SectionCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     # only admin/teacher can create sections
     if current_user.role.lower() not in ["admin", "teacher"]:
         raise HTTPException(status_code=403, detail="Not authorized")
     
-    # check if section name already exists
-    db_section = db.query(Section).filter(Section.name == section.name).first()
+    # check if section name already exists in THIS institution
+    inst_id = current_user.institution_id or "auratten_main"
+    db_section = db.query(Section).filter(Section.name == section.name, Section.institution_id == inst_id).first()
     if db_section:
-        raise HTTPException(status_code=400, detail="Section already exists")
+        raise HTTPException(status_code=400, detail="Section already exists in your workspace")
     
-    new_section = Section(name=section.name)
+    new_section = Section(name=section.name, institution_id=inst_id)
     db.add(new_section)
     db.commit()
     db.refresh(new_section)
-    return new_section
+    
+    return {
+        "message": "Section created successfully",
+        "section": {
+            "id": new_section.id,
+            "name": new_section.name,
+            "studentCount": 0,
+            "createdAt": new_section.created_at
+        }
+    }
 
 @router.get("/", response_model=List[SectionOut])
 @router.get("", response_model=List[SectionOut])
@@ -91,3 +101,17 @@ def list_section_students(section_id: int, db: Session = Depends(get_db)):
     # get all users mapped to this section
     students = db.query(User).join(SectionStudent).filter(SectionStudent.section_id == section_id).all()
     return students
+
+@router.delete("/{section_id}")
+def delete_section(section_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    # only admin/teacher can delete sections
+    if current_user.role.lower() not in ["admin", "teacher"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    section = db.query(Section).filter(Section.id == section_id).first()
+    if not section:
+        raise HTTPException(status_code=404, detail="Section not found")
+        
+    db.delete(section)
+    db.commit()
+    return {"message": "Section deleted successfully"}
