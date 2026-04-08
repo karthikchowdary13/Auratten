@@ -74,15 +74,6 @@ export default function LandingPage() {
             Auratten replaces paper registers with instant, fraud-proof QR code attendance
             for schools, colleges, and enterprises.
           </p>
-          <div className={styles.heroActions}>
-            <Link href="/register" className={styles.primaryBtn}>
-              Get Started Free
-              <ChevronRight size={18} style={{ marginLeft: 6 }} />
-            </Link>
-            <Link href="/login" className={styles.secondaryBtn}>
-              Sign In
-            </Link>
-          </div>
 
           <div className={styles.statsRow}>
             <div className={styles.statItem}>
