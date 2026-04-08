@@ -44,9 +44,9 @@ export default function LoginPage() {
             setAuth(user, accessToken, refreshToken);
 
             const dashboardMap: Record<string, string> = {
-                STUDENT: '/student/dashboard',
-                TEACHER: '/teacher/dashboard',
-                ADMIN: '/admin/dashboard',
+                STUDENT: '/dashboard/attendance',
+                TEACHER: '/dashboard',
+                ADMIN: '/dashboard',
             };
 
             router.push(dashboardMap[user.role] || '/dashboard');

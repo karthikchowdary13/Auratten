@@ -14,181 +14,215 @@ import styles from './register.module.css';
 const ROLES = ['STUDENT', 'TEACHER', 'ADMIN'];
 
 const DASHBOARD_MAP: Record<string, string> = {
-    STUDENT: '/student/dashboard',
-    TEACHER: '/teacher/dashboard',
-    ADMIN: '/admin/dashboard',
+    STUDENT: '/dashboard/attendance',
+    TEACHER: '/dashboard',
+    ADMIN: '/dashboard',
 };
 
 export default function RegisterPage() {
     const router = useRouter();
+    const setAuth = useAuthStore((state) => state.setAuth);
+    const { showToast } = useToast();
 
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [mobileNumber, setMobileNumber] = useState('');
-    const [password, setPassword] = useState('');
-    const [role, setRole] = useState('STUDENT');
+    // Form State
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        mobileNumber: '',
+        password: '',
+        role: 'STUDENT'
+    });
     
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    
-    const { showToast } = useToast();
-    const setAuth = useAuthStore((state) => state.setAuth);
 
-    const onRegisterClick = async () => {
-        const BASE_URL = process.env.NEXT_PUBLIC_API_BASE;
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    };
 
-        console.log('onRegisterClick started');
+    const handleRegister = async (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        if (!formData.name || !formData.email || !formData.password) {
+            setError('Please fill in all required fields');
+            return;
+        }
+
         setError(null);
         setLoading(true);
 
         try {
-            console.log('Sending registration request...');
-            const response = await fetch(`${BASE_URL}/auth/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, password, role, mobileNumber })
+            // 1. Create Account
+            const regResponse = await authApi.register({
+                name: formData.name,
+                email: formData.email,
+                password: formData.password,
+                role: formData.role,
+                mobileNumber: formData.mobileNumber
             });
 
-            const regData = await response.json();
-            console.log('Registration response:', regData);
-
-            if (!response.ok) {
-                const errorMsg = regData.detail?.message || regData.message || regData.detail || 'Registration failed';
-                throw new Error(errorMsg);
+            if (regResponse.error) {
+                setError(regResponse.error);
+                setLoading(false);
+                return;
             }
 
-            console.log('Attempting automatic login...');
-            const loginResponse = await fetch(`${BASE_URL}/auth/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
+            // 2. Immediate Auto-Login for seamless UX
+            const loginResponse = await authApi.login({
+                email: formData.email,
+                password: formData.password
             });
 
-            const loginData = await loginResponse.json();
-            console.log('Login response:', loginData);
-
-            if (!loginResponse.ok) {
-                console.warn('Login failed, redirecting to login page');
+            if (loginResponse.error) {
+                // If auto-login fails, send to login page to try manually
+                showToast('info', 'Account Created', 'Please sign in with your new credentials');
                 router.push('/login?registered=true');
                 return;
             }
 
-            // Sync Auth State
-            const { user: authUser, accessToken, refreshToken } = loginData;
-            saveAuthSession(accessToken, refreshToken, authUser);
-            setAuth(authUser, accessToken, refreshToken);
+            // 3. Setup Session
+            const { user, accessToken, refreshToken } = loginResponse.data;
+            saveAuthSession(accessToken, refreshToken, user);
+            setAuth(user, accessToken, refreshToken);
 
-            console.log('Redirecting to dashboard for role:', authUser.role);
-            showToast('success', 'Success', 'Account created successfully!');
-            router.push(DASHBOARD_MAP[authUser.role] || '/dashboard');
+            // 4. Redirect to proper Dashboard
+            showToast('success', 'Welcome!', 'Your account has been created successfully');
+            router.push(DASHBOARD_MAP[user.role] || '/dashboard');
 
         } catch (err: any) {
-            console.error('Registration/Login error:', err);
-            setError(err.message || 'An unexpected error occurred');
+            setError('Connection failed. Please try again later.');
+        } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-8 bg-[#0a0a0c] text-white">
-            <div className="w-full max-w-xl bg-[#16161a] border border-white/10 rounded-2xl p-10 shadow-2xl relative z-[1000]">
+        <div className="min-h-screen flex items-center justify-center p-8 bg-black relative">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(108,99,255,0.05),transparent)] pointer-events-none" />
+
+            <div className="w-full max-w-xl border border-white/10 bg-white/5 backdrop-blur-xl rounded-[2rem] shadow-2xl p-10 relative z-10">
                 <div className="text-center mb-10">
-                    <div className="inline-flex p-4 rounded-2xl bg-primary/10 overflow-hidden mb-6">
+                    <div className="inline-flex p-4 rounded-3xl bg-primary/10 overflow-hidden mb-6">
                         <img 
                             src="/auratten-logos/logo-main.png" 
                             alt="Auratten Logo" 
                             style={{ width: '80px', height: '80px', objectFit: 'contain' }} 
                         />
                     </div>
-                    <h1 className="text-4xl font-bold mb-2">Create account</h1>
-                    <p className="text-gray-400">Join Auratten and start tracking attendance</p>
+                    <h1 className="text-4xl font-bold tracking-tight text-white mb-2">Join Auratten</h1>
+                    <p className="text-white/50">Create your account to start tracking attendance</p>
                 </div>
 
                 {error && (
-                    <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg text-sm">
+                    <div className="mb-8 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm font-medium">
                         {error}
                     </div>
                 )}
 
-                <div className="space-y-6">
-                    <div className="relative">
-                        <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
-                        <input
-                            type="text"
-                            placeholder="Full Name"
-                            className="w-full bg-black/40 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-indigo-500/50 transition-all"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                        />
+                <form onSubmit={handleRegister} className="space-y-5">
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-white/70 ml-1">Full Name</label>
+                        <div className="relative">
+                            <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/30" />
+                            <input
+                                name="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                placeholder="John Doe"
+                                className="w-full pl-12 pr-4 h-14 bg-white/5 border border-white/10 rounded-2xl focus:border-primary/50 focus:bg-white/10 transition-all outline-none text-white font-medium"
+                                required
+                            />
+                        </div>
                     </div>
 
-                    <div className="relative">
-                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
-                        <input
-                            type="email"
-                            placeholder="Email Address"
-                            className="w-full bg-black/40 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-indigo-500/50 transition-all"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-white/70 ml-1">Email Address</label>
+                        <div className="relative">
+                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/30" />
+                            <input
+                                name="email"
+                                type="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                placeholder="name@institution.com"
+                                className="w-full pl-12 pr-4 h-14 bg-white/5 border border-white/10 rounded-2xl focus:border-primary/50 focus:bg-white/10 transition-all outline-none text-white font-medium"
+                                required
+                            />
+                        </div>
                     </div>
 
-                    <div className="relative">
-                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
-                        <input
-                            type="tel"
-                            placeholder="Mobile Number"
-                            className="w-full bg-black/40 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-indigo-500/50 transition-all"
-                            value={mobileNumber}
-                            onChange={(e) => setMobileNumber(e.target.value)}
-                        />
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-white/70 ml-1">Mobile Number (Optional)</label>
+                        <div className="relative">
+                            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/30" />
+                            <input
+                                name="mobileNumber"
+                                type="tel"
+                                value={formData.mobileNumber}
+                                onChange={handleChange}
+                                placeholder="+1 (555) 000-0000"
+                                className="w-full pl-12 pr-4 h-14 bg-white/5 border border-white/10 rounded-2xl focus:border-primary/50 focus:bg-white/10 transition-all outline-none text-white font-medium"
+                            />
+                        </div>
                     </div>
 
-                    <div className="relative">
-                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            className="w-full bg-black/40 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-indigo-500/50 transition-all"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-white/70 ml-1">Secure Password</label>
+                        <div className="relative">
+                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/30" />
+                            <input
+                                name="password"
+                                type="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                placeholder="••••••••"
+                                className="w-full pl-12 pr-4 h-14 bg-white/5 border border-white/10 rounded-2xl focus:border-primary/50 focus:bg-white/10 transition-all outline-none text-white font-medium"
+                                required
+                            />
+                        </div>
                     </div>
 
-                    <div className="relative">
-                        <Shield className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
-                        <select
-                            value={role}
-                            onChange={(e) => setRole(e.target.value)}
-                            className="w-full bg-black/40 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-indigo-500/50 transition-all appearance-none"
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-white/70 ml-1">Select Role</label>
+                        <div className="relative">
+                            <Shield className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/30" />
+                            <select
+                                name="role"
+                                value={formData.role}
+                                onChange={handleChange}
+                                className="w-full pl-12 pr-10 h-14 bg-white/5 border border-white/10 rounded-2xl focus:border-primary/50 focus:bg-white/10 transition-all outline-none text-white font-medium appearance-none"
+                            >
+                                <option value="STUDENT" className="bg-black">STUDENT</option>
+                                <option value="TEACHER" className="bg-black">TEACHER</option>
+                                <option value="ADMIN" className="bg-black">ADMIN</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="pt-4">
+                        <button
+                            type="submit"
+                            className="w-full h-14 bg-primary hover:bg-primary/90 text-white rounded-2xl text-lg font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+                            disabled={loading}
                         >
-                            {ROLES.map((r) => (
-                                <option key={r} value={r} className="bg-[#16161a] text-white">{r}</option>
-                            ))}
-                        </select>
+                            {loading ? (
+                                <>
+                                    <Loader2 className="h-5 w-5 animate-spin" />
+                                    Creating Account...
+                                </>
+                            ) : (
+                                'Sign Up'
+                            )}
+                        </button>
                     </div>
 
-                    <button
-                        type="button"
-                        onClick={onRegisterClick}
-                        className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-500/20 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={loading}
-                    >
-                        {loading ? (
-                            <>
-                                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                                Creating Account...
-                            </>
-                        ) : (
-                            'Create account'
-                        )}
-                    </button>
-
-                    <p className="text-center text-gray-500">
+                    <p className="text-center text-sm text-white/40 pt-4">
                         Already have an account?{' '}
-                        <a href="/login" className="text-indigo-400 hover:underline">Sign in</a>
+                        <Link href="/login" className="text-primary hover:text-primary/80 hover:underline font-bold transition-colors">
+                            Sign in
+                        </Link>
                     </p>
-                </div>
+                </form>
             </div>
         </div>
     );
