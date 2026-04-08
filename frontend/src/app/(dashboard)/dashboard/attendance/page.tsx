@@ -21,7 +21,8 @@ import {
     Filter,
     Trash2,
     XCircle,
-    Layers
+    Layers,
+    MinusCircle
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -254,9 +255,9 @@ export default function AttendanceScannerPage() {
     if (user?.role !== 'STUDENT') {
         // FILTERING LOGIC
         const filteredSessions = sessionHistory.filter(s => {
-            const createdAt = s.createdAt;
-            const dateStr = safeFormatDate(createdAt, 'P', ''); // Use localized date format for search
-            const createdTime = safeGetTime(createdAt);
+            const startTime = s.startTime;
+            const dateStr = safeFormatDate(startTime, 'P', ''); // Use localized date format for search
+            const createdTime = safeGetTime(startTime);
 
             const matchesSearch =
                 String(s.id).toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -445,7 +446,7 @@ export default function AttendanceScannerPage() {
                                                                     </span>
                                                                 </div>
                                                                 <div className={styles.sessionMeta}>
-                                                                    <span>{safeFormatDate(session.createdAt, 'd MMM, h:mm a')}</span>
+                                                                    <span>{safeFormatDate(session.startTime, 'd MMM, h:mm a')}</span>
                                                                     <span className={styles.dot}>•</span>
                                                                     <span>By {session.createdBy?.name || 'Teacher'}</span>
                                                                     <span className={styles.dot}>•</span>
@@ -555,7 +556,7 @@ export default function AttendanceScannerPage() {
                                                 <div className={styles.infoIcon}><Calendar size={16} /></div>
                                                 <label>Date</label>
                                             </div>
-                                            <span>{safeFormatDate(selectedSession.createdAt, 'EEEE, d MMM yyyy')}</span>
+                                            <span>{safeFormatDate(selectedSession.startTime, 'EEEE, d MMM yyyy')}</span>
                                         </div>
 
                                         <div className={styles.infoRowPremium}>
@@ -563,7 +564,15 @@ export default function AttendanceScannerPage() {
                                                 <div className={styles.infoIcon}><Clock size={16} /></div>
                                                 <label>Start Time</label>
                                             </div>
-                                            <span>{safeFormatTime(selectedSession.createdAt)}</span>
+                                            <span>{safeFormatTime(selectedSession.startTime)}</span>
+                                        </div>
+
+                                        <div className={styles.infoRowPremium}>
+                                            <div className="flex items-center gap-3">
+                                                <div className={styles.infoIcon}><MinusCircle size={16} /></div>
+                                                <label>End Time</label>
+                                            </div>
+                                            <span>{selectedSession.endTime ? safeFormatTime(selectedSession.endTime) : 'Pending (Active)'}</span>
                                         </div>
 
                                         <div className={styles.infoRowPremium}>
