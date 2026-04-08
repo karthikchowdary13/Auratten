@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { ToastProvider } from '@/context/ToastContext';
 import OfflineSync from '@/components/OfflineSync';
+import PrismBackground from '@/components/PrismBackground';
 
 export const metadata: Metadata = {
   title: 'Auratten — QR Attendance Platform',
@@ -30,10 +31,27 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="shortcut icon" href="/auratten-logos/favicon.png" />
         <link rel="apple-touch-icon" href="/auratten-logos/logo-mobile.png" />
       </head>
-      <body suppressHydrationWarning>
+      <body suppressHydrationWarning className="min-h-screen bg-background relative selection:bg-primary/30 selection:text-white">
         <ToastProvider>
-          {children}
-          <OfflineSync />
+          {/* Fixed background layer */}
+          <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
+            <PrismBackground 
+              animationType="3drotate"
+              scale={3.5}
+              glow={0.6}
+              noise={0.3}
+              timeScale={0.3}
+              bloom={0.8}
+            />
+            {/* Subtle overlay to darken and blend further for readability */}
+            <div className="absolute inset-0 bg-background/70 backdrop-blur-[1px]" />
+          </div>
+
+          {/* Content layer */}
+          <div className="relative z-10 flex flex-col min-h-screen">
+            {children}
+            <OfflineSync />
+          </div>
         </ToastProvider>
       </body>
     </html>
