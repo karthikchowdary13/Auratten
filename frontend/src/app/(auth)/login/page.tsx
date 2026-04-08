@@ -78,15 +78,15 @@ export default function LoginPage() {
 
             <div className="w-full max-w-xl border border-white/10 bg-[#16161a]/60 backdrop-blur-2xl rounded-[2.5rem] shadow-2xl p-10 relative z-10 animate-in fade-in zoom-in duration-500">
                 <div className="space-y-6 text-center mb-10">
-                    <div className="flex justify-center">
-                        <div className="p-4 rounded-3xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 shadow-xl shadow-primary/10 mb-2">
+                    <Link href="/" className="inline-flex group cursor-pointer transition-all hover:scale-105 active:scale-95">
+                        <div className="p-4 rounded-3xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 shadow-xl shadow-primary/10 mb-2 group-hover:shadow-primary/20 group-hover:border-primary/40 transition-all">
                             <img 
                                 src="/auratten-logos/logo-main.png" 
                                 alt="Auratten Logo" 
                                 className="w-16 h-16 object-contain"
                             />
                         </div>
-                    </div>
+                    </Link>
                     <div>
                         <h1 className="text-4xl font-bold tracking-tight text-white mb-2 leading-tight">Welcome back</h1>
                         <p className="text-white/40 font-medium">Enter your credentials to access your account</p>
