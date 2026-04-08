@@ -437,16 +437,18 @@ export default function AttendanceScannerPage() {
                                                             <div>
                                                                 <div className={styles.sessionTop}>
                                                                     <span className={styles.sessionName}>
-                                                                        {safeFormatDate(session.createdAt, 'd MMMM yyyy, h:mm a')}
+                                                                        {session.section?.name || 'General Session'}
                                                                     </span>
                                                                     <span className={session.isActive ? styles.statusActive : styles.statusEnded}>
                                                                         {session.isActive ? 'Active' : 'Ended'}
                                                                     </span>
                                                                 </div>
                                                                 <div className={styles.sessionMeta}>
-                                                                    <span>By {session.createdBy?.name}</span>
+                                                                    <span>{safeFormatDate(session.createdAt, 'd MMM, h:mm a')}</span>
                                                                     <span className={styles.dot}>•</span>
-                                                                    <span>{String(session.id).slice(-8).toUpperCase()}</span>
+                                                                    <span>By {session.createdBy?.name || 'Teacher'}</span>
+                                                                    <span className={styles.dot}>•</span>
+                                                                    <span>ID: {String(session.id || '').slice(-6).toUpperCase()}</span>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -525,36 +527,65 @@ export default function AttendanceScannerPage() {
                             </div>
                             <div className={styles.detailsSide}>
                                 <div className={styles.sideCard}>
-                                    <h3>Session Info</h3>
-                                    <div className={styles.infoRow}>
-                                        <label>ID</label>
-                                        <span>{String(selectedSession.id).slice(0, 12)}...</span>
+                                    <div className="flex items-center gap-2 mb-6">
+                                        <div className="w-1.5 h-6 bg-primary rounded-full" />
+                                        <h3 className="text-lg font-bold text-white m-0">Session Analysis</h3>
                                     </div>
-                                    <div className={styles.infoRow}>
-                                        <label>Section</label>
-                                        <span>{selectedSession.section?.name || 'General Session'}</span>
-                                    </div>
-                                    <div className={styles.infoRow}>
-                                        <label>Teacher</label>
-                                        <span>{selectedSession.createdBy?.name}</span>
-                                    </div>
-                                    <div className={styles.infoRow}>
-                                        <label>Date</label>
-                                        <span>{new Date(selectedSession.createdAt).toLocaleDateString()}</span>
-                                    </div>
-                                    <div className={styles.infoRow}>
-                                        <label>Time</label>
-                                        <span>{new Date(selectedSession.createdAt).toLocaleTimeString()}</span>
-                                    </div>
-                                    <hr className={styles.divider} />
-                                    <div className={styles.summaryStats}>
-                                        <div className={styles.sumStat}>
-                                            <span className={styles.sumVal}>{sessionAttendance.filter(r => r.status === 'PRESENT').length}</span>
-                                            <span className={styles.sumLab}>Present</span>
+                                    
+                                    <div className="space-y-4">
+                                        <div className={styles.infoRowPremium}>
+                                            <div className="flex items-center gap-3">
+                                                <div className={styles.infoIcon}><Layers size={16} /></div>
+                                                <label>Section</label>
+                                            </div>
+                                            <span>{selectedSession.section?.name || 'General Session'}</span>
                                         </div>
-                                        <div className={styles.sumStat}>
-                                            <span className={styles.sumVal}>{sessionAttendance.filter(r => r.status === 'ABSENT').length}</span>
-                                            <span className={styles.sumLab}>Absent</span>
+
+                                        <div className={styles.infoRowPremium}>
+                                            <div className="flex items-center gap-3">
+                                                <div className={styles.infoIcon}><UserCheck size={16} /></div>
+                                                <label>Lead Teacher</label>
+                                            </div>
+                                            <span>{selectedSession.createdBy?.name || 'Teacher'}</span>
+                                        </div>
+
+                                        <div className={styles.infoRowPremium}>
+                                            <div className="flex items-center gap-3">
+                                                <div className={styles.infoIcon}><Calendar size={16} /></div>
+                                                <label>Date</label>
+                                            </div>
+                                            <span>{safeFormatDate(selectedSession.createdAt, 'EEEE, d MMM yyyy')}</span>
+                                        </div>
+
+                                        <div className={styles.infoRowPremium}>
+                                            <div className="flex items-center gap-3">
+                                                <div className={styles.infoIcon}><Clock size={16} /></div>
+                                                <label>Start Time</label>
+                                            </div>
+                                            <span>{safeFormatTime(selectedSession.createdAt)}</span>
+                                        </div>
+
+                                        <div className={styles.infoRowPremium}>
+                                            <div className="flex items-center gap-3">
+                                                <div className={styles.infoIcon}><AlertTriangle size={16} /></div>
+                                                <label>Session ID</label>
+                                            </div>
+                                            <code className="text-xs text-primary bg-primary/10 px-2 py-0.5 rounded-md">
+                                                {String(selectedSession.id || '').toUpperCase()}
+                                            </code>
+                                        </div>
+                                    </div>
+
+                                    <div className={styles.dividerPremium} />
+
+                                    <div className={styles.summaryStatsPremium}>
+                                        <div className={cn(styles.sumStatPremium, styles.sumStatPresent)}>
+                                            <span className={styles.sumValPremium}>{sessionAttendance.filter(r => r.status === 'PRESENT').length}</span>
+                                            <span className={styles.sumLabPremium}>Present</span>
+                                        </div>
+                                        <div className={cn(styles.sumStatPremium, styles.sumStatAbsent)}>
+                                            <span className={styles.sumValPremium}>{sessionAttendance.filter(r => r.status === 'ABSENT').length}</span>
+                                            <span className={styles.sumLabPremium}>Absent</span>
                                         </div>
                                     </div>
                                 </div>
