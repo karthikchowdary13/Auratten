@@ -4,8 +4,8 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from config import settings
 
-# use pbkdf2_sha256 for better compatibility on all systems
-pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
+# use pbkdf2_sha256 as default and bcrypt for backwards compatibility
+pwd_context = CryptContext(schemes=["pbkdf2_sha256", "bcrypt"], deprecated="auto")
 
 # algorithms for jwt
 ALGORITHM = "HS256"
