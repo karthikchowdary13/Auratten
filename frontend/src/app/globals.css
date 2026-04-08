@@ -103,8 +103,7 @@
   }
 }
 
-html, body {
-
+@layer base {
   * {
     @apply border-border;
   }
@@ -120,7 +119,17 @@ html, body {
     @apply bg-background text-foreground;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
   }
+}
+
+.light {
+  --background: 0 0% 100%;
+  --foreground: 240 10% 4%;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --border: rgba(0, 0, 0, 0.08);
 }
 
 /* Global Smooth Scrolling */
