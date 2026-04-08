@@ -105,8 +105,8 @@ export default function TopBar() {
 
                     {/* Notifications Dropdown */}
                     {isNotificationsOpen && (
-                        <div className="absolute right-0 top-full mt-3 w-80 bg-black border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
-                            <div className="p-4 flex items-center justify-between border-b border-white/5 bg-white/5">
+                        <div className="absolute right-0 top-full mt-3 w-80 bg-card border border-border rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
+                            <div className="p-4 flex items-center justify-between border-b border-border/50 bg-accent/20">
                                 <h3 className="font-bold text-sm text-foreground">Notifications</h3>
                                 <button className="text-[10px] font-bold text-primary uppercase tracking-widest hover:opacity-80 transition-opacity">
                                     Mark all as read
@@ -119,7 +119,7 @@ export default function TopBar() {
                                     { id: 2, title: 'Low Attendance', msg: 'Section B attendance dropped below 75%.', time: '1h ago', type: 'warning' },
                                     { id: 3, title: 'System Update', msg: 'Auratten v1.2 is now live with profile photos!', time: '5h ago', type: 'success' },
                                 ].map((n) => (
-                                    <div key={n.id} className="p-4 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer group">
+                                    <div key={n.id} className="p-4 border-b border-border/50 hover:bg-accent/50 transition-colors cursor-pointer group">
                                         <div className="flex gap-3">
                                             <div className={cn(
                                                 "w-2 h-2 rounded-full mt-1.5 shrink-0",
@@ -172,9 +172,9 @@ export default function TopBar() {
 
                     {/* Dropdown Menu */}
                     {isProfileOpen && (
-                        <div className="absolute right-0 top-full mt-3 w-72 bg-black border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
+                        <div className="absolute right-0 top-full mt-3 w-72 bg-card border border-border rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
                             {/* Section 1: Identity */}
-                             <div className="p-5 flex items-center gap-4 bg-gradient-to-br from-black/40 to-transparent border-b border-white/5">
+                             <div className="p-5 flex items-center gap-4 bg-gradient-to-br from-accent/10 to-transparent border-b border-border/50">
                                 <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary text-lg font-bold border border-primary/20 overflow-hidden">
                                     {user?.avatar ? (
                                         <img 
@@ -200,7 +200,7 @@ export default function TopBar() {
                                 </div>
                             </div>
 
-                            <div className="h-px bg-white/5" />
+                            <div className="h-px bg-border/50" />
 
                             {/* Section 2: Navigation */}
                             <div className="p-2 space-y-1">
@@ -215,9 +215,9 @@ export default function TopBar() {
                                             setIsProfileOpen(false);
                                             router.push(item.href);
                                         }}
-                                        className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-all text-left group"
+                                        className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-accent/50 transition-all text-left group"
                                     >
-                                        <div className="p-2 bg-white/5 rounded-lg text-muted-foreground group-hover:text-primary transition-colors">
+                                        <div className="p-2 bg-accent/30 rounded-lg text-muted-foreground group-hover:text-primary transition-colors">
                                             <item.icon size={18} />
                                         </div>
                                         <div>
@@ -229,9 +229,9 @@ export default function TopBar() {
 
                                 <button
                                     onClick={toggleTheme}
-                                    className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-all text-left group"
+                                    className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-accent/50 transition-all text-left group"
                                 >
-                                    <div className="p-2 bg-white/5 rounded-lg text-muted-foreground group-hover:text-primary transition-colors">
+                                    <div className="p-2 bg-accent/30 rounded-lg text-muted-foreground group-hover:text-primary transition-colors">
                                         {theme === 'dark' ? <Moon size={18} /> : <Sun size={18} />}
                                     </div>
                                     <div>
@@ -241,7 +241,7 @@ export default function TopBar() {
                                 </button>
                             </div>
 
-                            <div className="h-px bg-white/5" />
+                            <div className="h-px bg-border/50" />
 
                             {/* Section 3: Logout */}
                             <div className="p-2">
@@ -254,7 +254,7 @@ export default function TopBar() {
                                     }}
                                     className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-destructive/10 transition-all text-left group"
                                 >
-                                    <div className="p-2 bg-destructive/5 rounded-lg text-destructive/70 group-hover:text-destructive transition-colors">
+                                    <div className="p-2 bg-destructive/10 rounded-lg text-destructive/70 group-hover:text-destructive transition-colors">
                                         <LogOut size={18} />
                                     </div>
                                     <div>
