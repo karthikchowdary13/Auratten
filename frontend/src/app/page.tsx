@@ -131,7 +131,7 @@ export default function LandingPage() {
           <p className={styles.ctaSubtext}>Join Auratten today and eliminate attendance fraud forever. Free for small teams.</p>
           <div className={styles.heroActions}>
             <Link href="/register" className={styles.primaryBtn}>
-              Create Free Account
+              Get Started
               <ChevronRight size={18} style={{ marginLeft: 6 }} />
             </Link>
           </div>
