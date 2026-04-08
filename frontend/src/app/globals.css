@@ -103,14 +103,23 @@
   }
 }
 
-@layer base {
+html, body {
+
   * {
     @apply border-border;
+  }
+
+  html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
+    position: relative;
+    scroll-behavior: smooth;
   }
 
   body {
     @apply bg-background text-foreground;
     scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
