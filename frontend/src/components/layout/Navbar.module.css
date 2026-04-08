@@ -27,16 +27,17 @@
 .logo {
     display: flex;
     align-items: center;
+    gap: 14px;
     transition: all 0.3s ease;
 }
 
 .wordmark {
     font-family: 'Varela Round', sans-serif;
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 400;
     color: #ffffff;
     letter-spacing: -0.01em;
-    text-transform: lowercase;
+    font-style: italic;
     line-height: 1;
     display: block;
 }
