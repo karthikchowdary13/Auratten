@@ -208,12 +208,50 @@ export default function AttendanceScannerPage() {
     };
 
     // --- Teacher Logic ---
+    const MOCK_SESSIONS = [
+        {
+            id: 'mock-1',
+            startTime: new Date(Date.now() - 3600000 * 2).toISOString(),
+            isActive: false,
+            attendanceCount: 42,
+            _count: { attendanceRecords: 42 },
+            section: { name: 'CS-101 (Intro to CS)', studentCount: 50 },
+            createdBy: { name: 'Karthik Ethamukkala' },
+            isMock: true
+        },
+        {
+            id: 'mock-2',
+            startTime: new Date(Date.now() - 3600000 * 24).toISOString(),
+            isActive: false,
+            attendanceCount: 28,
+            _count: { attendanceRecords: 28 },
+            section: { name: 'MATH-204 (Calculus II)', studentCount: 30 },
+            createdBy: { name: 'Karthik Ethamukkala' },
+            isMock: true
+        },
+        {
+            id: 'mock-3',
+            startTime: new Date(Date.now() - 3600000 * 48).toISOString(),
+            isActive: false,
+            attendanceCount: 15,
+            _count: { attendanceRecords: 15 },
+            section: { name: 'PHY-102 (Mechanics)', studentCount: 45 },
+            createdBy: { name: 'Karthik Ethamukkala' },
+            isMock: true
+        }
+    ];
+
     const loadSessionHistory = async () => {
         const targetId = user?.institutionId;
         if (targetId) {
             setLoading(true);
             const { data } = await qrApi.getHistory(targetId);
-            if (data) setSessionHistory(data);
+            if (data && data.length > 0) {
+                setSessionHistory(data);
+            } else {
+                // If no real data, show mock data to make it look "perfect"
+                setSessionHistory(MOCK_SESSIONS);
+            }
             setLoading(false);
         }
     };
@@ -455,6 +493,12 @@ export default function AttendanceScannerPage() {
                                                                     </span>
                                                                 </div>
                                                                 <div className={styles.sessionMeta}>
+                                                                    {session.isMock && (
+                                                                        <>
+                                                                            <span className={styles.mockBadge}>Demo Data</span>
+                                                                            <span className={styles.dot}>•</span>
+                                                                        </>
+                                                                    )}
                                                                     <span>{safeFormatDate(session.startTime, 'd MMM, h:mm a')}</span>
                                                                     <span className={styles.dot}>•</span>
                                                                     <span>By {session.createdBy?.name || 'Teacher'}</span>

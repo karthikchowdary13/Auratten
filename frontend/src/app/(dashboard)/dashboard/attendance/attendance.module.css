@@ -300,6 +300,18 @@
     font-weight: 700;
 }
 
+.mockBadge {
+    background: rgba(108, 99, 255, 0.1);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid rgba(108, 99, 255, 0.2);
+}
+
 .sessionMeta {
     font-size: 13px;
     color: var(--text-muted);
