@@ -29,6 +29,7 @@ import ConfirmPasswordModal from '@/components/ui/ConfirmPasswordModal';
 import styles from './attendance.module.css';
 import { Html5Qrcode } from 'html5-qrcode';
 import { useToast } from '@/context/ToastContext';
+import { cn } from '@/lib/utils';
 
 // Safe date formatting helpers to prevent RangeError
 const safeFormatDate = (dateStr: any, formatStr: string, fallback: string = 'N/A') => {
