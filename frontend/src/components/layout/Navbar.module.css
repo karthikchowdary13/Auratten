@@ -51,3 +51,15 @@
     align-items: center;
     gap: 8px;
 }
+
+@media (max-width: 480px) {
+    .inner {
+        padding: 12px 16px;
+    }
+    .wordmark {
+        font-size: 20px;
+    }
+    .actions {
+        gap: 4px;
+    }
+}

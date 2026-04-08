@@ -8,7 +8,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 100px 24px 80px;
+  padding: 80px 20px 60px;
   position: relative;
   z-index: 1;
 }
@@ -83,7 +83,7 @@
 }
 
 .heroTitle {
-  font-size: clamp(42px, 7vw, 72px);
+  font-size: clamp(32px, 9vw, 68px);
   font-weight: 800;
   line-height: 1.05;
   letter-spacing: -0.04em;
@@ -98,7 +98,7 @@
 .heroSubtitle {
   font-size: 18px;
   color: var(--text-secondary);
-  max-width: 560px;
+  max-width: 90%;
   line-height: 1.7;
   margin-bottom: 36px;
 }
@@ -292,11 +292,12 @@
   align-items: center;
   gap: 40px;
   margin-top: 60px;
-  padding: 24px 40px;
-  background: rgba(255, 255, 255, 0.02);
+  padding: 24px 30px;
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 20px;
   backdrop-filter: blur(5px);
+  width: min(100%, 400px);
 }
 
 .statItem {
@@ -327,13 +328,50 @@
 }
 
 @media (max-width: 768px) {
+  .hero {
+    padding: 60px 20px;
+  }
+  .features {
+    padding: 60px 20px;
+  }
+  .featuresTitle {
+    font-size: 28px;
+  }
   .statsRow {
     flex-direction: column;
     gap: 24px;
-    padding: 32px;
+    padding: 32px 20px;
   }
   .statDivider {
-    width: 40px;
+    width: 60px;
     height: 1px;
+    opacity: 0.3;
+  }
+  .cta {
+    padding: 60px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroTitle {
+    font-size: 34px;
+    line-height: 1.1;
+  }
+  .heroSubtitle {
+    font-size: 16px;
+    margin-bottom: 24px;
+  }
+  .statsRow {
+    width: 100%;
+    border-radius: 16px;
+  }
+  .featuresGrid {
+    grid-template-columns: 1fr;
+  }
+  .featureCard {
+    padding: 24px;
+  }
+  .ctaTitle {
+    font-size: 26px;
   }
 }
