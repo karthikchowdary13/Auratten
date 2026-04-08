@@ -27,21 +27,23 @@
 .logo {
     display: flex;
     align-items: center;
-    gap: 14px;
-    font-size: 26px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    background: linear-gradient(to bottom, #ffffff 0%, rgba(255, 255, 255, 0.8) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.3s ease;
+}
+
+.wordmark {
+    font-family: 'Varela Round', sans-serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+    text-transform: lowercase;
     line-height: 1;
+    display: block;
 }
 
 .logo:hover {
-    transform: translateY(-1px);
-    filter: drop-shadow(0 4px 12px rgba(255, 255, 255, 0.1));
+    transform: scale(1.02);
+    opacity: 0.9;
 }
 
 .actions {
