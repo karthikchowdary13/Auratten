@@ -32,11 +32,20 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { useToast } from '@/context/ToastContext';
 import { cn } from '@/lib/utils';
 
-// Safe date formatting helpers to prevent RangeError
+// Safe date formatting helpers with UTC awareness
+const ensureUTC = (dateStr: any) => {
+    if (typeof dateStr !== 'string') return dateStr;
+    // If it looks like an ISO string but lacks a timezone, append 'Z'
+    if (dateStr.includes('T') && !dateStr.includes('Z') && !dateStr.includes('+')) {
+        return `${dateStr}Z`;
+    }
+    return dateStr;
+};
+
 const safeFormatDate = (dateStr: any, formatStr: string, fallback: string = 'N/A') => {
     try {
         if (!dateStr) return fallback;
-        const d = new Date(dateStr);
+        const d = new Date(ensureUTC(dateStr));
         if (isNaN(d.getTime())) return fallback;
         return format(d, formatStr);
     } catch (e) {
@@ -47,7 +56,7 @@ const safeFormatDate = (dateStr: any, formatStr: string, fallback: string = 'N/A
 const safeFormatTime = (dateStr: any, fallback: string = '-') => {
     try {
         if (!dateStr) return fallback;
-        const d = new Date(dateStr);
+        const d = new Date(ensureUTC(dateStr));
         if (isNaN(d.getTime())) return fallback;
         return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     } catch (e) {
@@ -58,7 +67,7 @@ const safeFormatTime = (dateStr: any, fallback: string = '-') => {
 const safeGetTime = (dateStr: any, fallback: number = 0) => {
     try {
         if (!dateStr) return fallback;
-        const d = new Date(dateStr);
+        const d = new Date(ensureUTC(dateStr));
         return isNaN(d.getTime()) ? fallback : d.getTime();
     } catch (e) {
         return fallback;

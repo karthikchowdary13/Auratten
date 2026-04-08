@@ -41,9 +41,29 @@ export default function TopBar() {
             .slice(0, 2);
     };
 
+    const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+
+    useEffect(() => {
+        const savedTheme = localStorage.getItem('auratten-theme') as 'dark' | 'light';
+        if (savedTheme) {
+            setTheme(savedTheme);
+            if (savedTheme === 'light') {
+                document.documentElement.classList.add('light');
+            } else {
+                document.documentElement.classList.remove('light');
+            }
+        }
+    }, []);
+
     const toggleTheme = () => {
-        const isDark = document.documentElement.classList.toggle('dark');
-        localStorage.setItem('auratten-theme', isDark ? 'dark' : 'light');
+        const newTheme = theme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+        if (newTheme === 'light') {
+            document.documentElement.classList.add('light');
+        } else {
+            document.documentElement.classList.remove('light');
+        }
+        localStorage.setItem('auratten-theme', newTheme);
     };
 
     return (
@@ -212,12 +232,11 @@ export default function TopBar() {
                                     className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-all text-left group"
                                 >
                                     <div className="p-2 bg-white/5 rounded-lg text-muted-foreground group-hover:text-primary transition-colors">
-                                        <Moon size={18} className="dark:hidden" />
-                                        <Sun size={18} className="hidden dark:block" />
+                                        {theme === 'dark' ? <Moon size={18} /> : <Sun size={18} />}
                                     </div>
                                     <div>
                                         <p className="text-sm font-semibold text-foreground leading-tight">Theme</p>
-                                        <p className="text-[10px] text-muted-foreground mt-0.5 leading-none">Dark / Light mode</p>
+                                        <p className="text-[10px] text-muted-foreground mt-0.5 leading-none">{theme === 'dark' ? 'Dark Mode' : 'White Mode'}</p>
                                     </div>
                                 </button>
                             </div>
