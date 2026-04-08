@@ -13,7 +13,7 @@ export default function Navbar() {
                     <img 
                         src="/auratten-logos/logo-website.png" 
                         alt="Auratten Logo" 
-                        style={{ height: '32px', width: 'auto', objectFit: 'contain' }} 
+                        style={{ height: '40px', width: 'auto', objectFit: 'contain' }} 
                     />
                     <span>Auratten</span>
                 </Link>
