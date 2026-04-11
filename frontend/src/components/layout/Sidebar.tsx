@@ -89,12 +89,7 @@ export default function Sidebar() {
                             style={{ width: '28px', height: '28px', objectFit: 'contain' }} 
                         />
                     </div>
-                    <span className={cn(
-                        "text-xl font-bold tracking-tight transition-all duration-[750ms] overflow-hidden whitespace-nowrap text-white",
-                        isSidebarCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"
-                    )}>
-                        Auratten
-                    </span>
+                    {/* Text removed as it is now part of logo-main.png */}
                 </Link>
                 <button 
                     onClick={() => {
