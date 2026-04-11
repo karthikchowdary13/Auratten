@@ -5,15 +5,15 @@ import OfflineSync from '@/components/OfflineSync';
 import PrismBackground from '@/components/PrismBackground';
 
 export const metadata: Metadata = {
-  title: 'Auratten — QR Attendance Platform',
-  description: 'Cloud-based QR code attendance tracking for institutions — built for students, teachers, and administrators.',
+  title: 'Auratten',
+  description: 'Smart Attendance, Powered by QR.',
   icons: {
     icon: [
-      { url: '/auratten-logos/favicon.png' }
+      { url: '/auratten-logos/favicon.png', sizes: '32x32', type: 'image/png' },
+      { url: '/auratten-logos/favicon.png', sizes: '192x192', type: 'image/png' },
     ],
-    apple: [
-      { url: '/auratten-logos/logo-mobile.png' }
-    ]
+    shortcut: '/auratten-logos/favicon.png',
+    apple: '/auratten-logos/logo-mobile.png',
   }
 };
 
