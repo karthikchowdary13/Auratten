@@ -59,12 +59,12 @@
 }
 
 .ghost {
-    background: transparent;
+    background: rgba(108, 99, 255, 0.08);
     color: var(--accent);
 }
 
 .ghost:hover:not(:disabled) {
-    background: rgba(108, 99, 255, 0.08);
+    background: rgba(108, 99, 255, 0.15);
     color: var(--accent);
 }
 
