@@ -37,7 +37,7 @@ export default function Navbar() {
                     <img 
                         src="/auratten-logos/favicon.png" 
                         alt="Auratten Icon" 
-                        style={{ height: '36px', width: 'auto', objectFit: 'contain' }} 
+                        style={{ height: '48px', width: 'auto', objectFit: 'contain' }} 
                     />
                     <span className={styles.wordmark}>Auratten</span>
                 </Link>
