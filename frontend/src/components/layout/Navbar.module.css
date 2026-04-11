@@ -9,8 +9,17 @@
     transition: all 0.3s ease;
 }
 
+:global(.light) .navbar {
+    background: #ffffff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
 .navbar:hover {
     background: #050505;
+}
+
+:global(.light) .navbar:hover {
+    background: #fdfdfd;
 }
 
 .inner {
