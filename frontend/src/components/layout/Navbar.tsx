@@ -37,7 +37,7 @@ export default function Navbar() {
                     <img 
                         src="/auratten-logos/logo-main.png" 
                         alt="Auratten" 
-                        style={{ height: '48px', width: 'auto', objectFit: 'contain' }} 
+                        style={{ height: '60px', width: 'auto', objectFit: 'contain' }} 
                     />
                 </Link>
                 <div className={styles.actions}>

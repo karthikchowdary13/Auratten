@@ -59,7 +59,7 @@ export default function LandingPage() {
             <img 
               src="/auratten-logos/logo-main.png" 
               alt="Auratten Logo" 
-              style={{ width: '80px', height: '80px', objectFit: 'contain', marginBottom: '2rem' }} 
+              style={{ width: '300px', height: 'auto', objectFit: 'contain', marginBottom: '2rem' }} 
             />
           </div>
           <div className={styles.heroBadge}>
