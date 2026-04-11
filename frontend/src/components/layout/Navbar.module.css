@@ -33,12 +33,11 @@
 
 .wordmark {
     font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 24px;
-    font-weight: 700;
+    font-size: 26px;
+    font-weight: 800;
     font-style: italic;
-    color: #ffffff;
-    letter-spacing: -0.02em;
-    background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.8) 100%);
+    letter-spacing: -0.04em;
+    background: linear-gradient(180deg, #F8FAFC 0%, #94A3B8 60%, #020617 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
