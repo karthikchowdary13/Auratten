@@ -9,10 +9,10 @@ export const metadata: Metadata = {
   description: 'Smart Attendance, Powered by QR.',
   icons: {
     icon: [
-      { url: '/auratten-logos/favicon.png', sizes: '32x32', type: 'image/png' },
-      { url: '/auratten-logos/favicon.png', sizes: '192x192', type: 'image/png' },
+      { url: '/auratten-logos/favicon1.png', sizes: '32x32', type: 'image/png' },
+      { url: '/auratten-logos/favicon1.png', sizes: '192x192', type: 'image/png' },
     ],
-    shortcut: '/auratten-logos/favicon.png',
+    shortcut: '/auratten-logos/favicon1.png',
     apple: '/auratten-logos/logo-mobile.png',
   }
 };
