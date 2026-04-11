@@ -148,6 +148,18 @@
   transition: all 0.3s ease;
 }
 
+:global(.light) .featureCard {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.featureCard:hover {
+    transform: translateY(-4px);
+    border-color: var(--feature-color);
+    box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.2);
+}
+
 /* Stats */
 .statsRow {
   display: flex;
@@ -161,6 +173,12 @@
   border-radius: 24px;
   width: 100%;
   max-width: 600px;
+}
+
+:global(.light) .statsRow {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
 }
 
 .statItem {
