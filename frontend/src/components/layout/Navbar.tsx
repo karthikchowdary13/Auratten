@@ -35,14 +35,9 @@ export default function Navbar() {
             <div className={styles.inner}>
                 <Link href="/" className={styles.logo}>
                     <img 
-                        src="/auratten-logos/favicon.png" 
-                        alt="Icon" 
-                        style={{ height: '32px', width: 'auto', objectFit: 'contain' }} 
-                    />
-                    <img 
                         src="/auratten-logos/logo-main.png" 
                         alt="Auratten" 
-                        style={{ height: '42px', width: 'auto', objectFit: 'contain' }} 
+                        style={{ height: '48px', width: 'auto', objectFit: 'contain' }} 
                     />
                 </Link>
                 <div className={styles.actions}>
