@@ -155,9 +155,35 @@
 }
 
 .featureCard:hover {
-    transform: translateY(-4px);
+    transform: translateY(-12px) scale(1.02);
     border-color: var(--feature-color);
-    box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 30px 60px -25px rgba(0, 0, 0, 0.6), 
+                0 0 20px -5px var(--feature-color);
+}
+
+:global(.light) .featureCard:hover {
+    background: #ffffff;
+    transform: translateY(-12px) scale(1.02);
+    box-shadow: 0 30px 60px -25px rgba(0, 0, 0, 0.15), 
+                0 0 20px -5px var(--feature-color);
+}
+
+.featureIcon {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.featureCard:hover .featureIcon {
+    transform: scale(1.1) rotate(5deg);
+    filter: brightness(1.2);
+    box-shadow: 0 0 20px var(--feature-color);
 }
 
 /* Stats */
