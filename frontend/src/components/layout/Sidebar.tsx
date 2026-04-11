@@ -84,8 +84,8 @@ export default function Sidebar() {
                 <Link href="/" className="absolute left-4 flex items-center gap-3 group cursor-pointer transition-opacity hover:opacity-80">
                     <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center overflow-hidden transition-all duration-[750ms]">
                         <img 
-                            src="/auratten-logos/logo-main.png" 
-                            alt="Auratten Logo" 
+                            src="/auratten-logos/favicon.png" 
+                            alt="Auratten" 
                             style={{ width: '28px', height: '28px', objectFit: 'contain' }} 
                         />
                     </div>
