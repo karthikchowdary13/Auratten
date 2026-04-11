@@ -47,7 +47,7 @@
 
 .secondary {
     background: rgba(108, 99, 255, 0.1);
-    color: #e2e1ff;
+    color: var(--accent);
     border: 1px solid rgba(108, 99, 255, 0.25);
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -55,18 +55,17 @@
 .secondary:hover:not(:disabled) {
     background: rgba(108, 99, 255, 0.2);
     border-color: var(--accent);
-    box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.4), 0 0 15px rgba(108, 99, 255, 0.2);
     transform: translateY(-1px);
 }
 
 .ghost {
-    background: rgba(108, 99, 255, 0.05);
-    color: #c7c4ff;
+    background: transparent;
+    color: var(--accent);
 }
 
 .ghost:hover:not(:disabled) {
-    background: rgba(108, 99, 255, 0.15);
-    color: #fff;
+    background: rgba(108, 99, 255, 0.08);
+    color: var(--accent);
 }
 
 .danger {
