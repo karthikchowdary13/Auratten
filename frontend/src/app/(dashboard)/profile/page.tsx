@@ -59,6 +59,7 @@ export default function ProfilePage() {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [passwordSuccess, setPasswordSuccess] = useState(false);
     
     const [mobileInput, setMobileInput] = useState(user?.mobileNumber || '');
     const [emailInput, setEmailInput] = useState(user?.email || '');
@@ -177,13 +178,24 @@ export default function ProfilePage() {
                 return;
             }
             showToast('success', 'Security Updated', 'Your password has been changed successfully.');
+            setPasswordSuccess(true);
             setCurrentPassword('');
             setNewPassword('');
             setConfirmPassword('');
-            setIsPasswordChangeOpen(false);
             
-            // update local password update timestamp if we want, or just let it be next refresh
-            if (user) updateUserStore({ ...user, passwordUpdatedAt: new Date().toISOString() });
+            // update local password update timestamp
+            if (user) {
+                updateUserStore({ 
+                    ...user, 
+                    passwordUpdatedAt: new Date().toISOString() 
+                });
+            }
+
+            // Keep success message for 5 seconds
+            setTimeout(() => {
+                setPasswordSuccess(false);
+                setIsPasswordChangeOpen(false);
+            }, 5000);
         },
         onError: (error: any) => {
             showToast('error', 'Critical Error', error.message || 'Password update failed');
@@ -475,12 +487,19 @@ export default function ProfilePage() {
                                         <Input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="bg-white/5 border-white/10" placeholder="••••••••" />
                                     </div>
                                     <Button 
-                                        className="w-full mt-4" 
-                                        disabled={!currentPassword || !newPassword || newPassword !== confirmPassword || changePasswordMutation.isPending}
+                                        className={cn("w-full mt-4", passwordSuccess && "bg-green-500 hover:bg-green-600")}
+                                        disabled={!currentPassword || !newPassword || newPassword !== confirmPassword || changePasswordMutation.isPending || passwordSuccess}
                                         onClick={() => changePasswordMutation.mutate()}
                                     >
-                                        {changePasswordMutation.isPending ? 'Updating...' : 'Update Password'}
+                                        {changePasswordMutation.isPending ? 'Updating...' : 
+                                         passwordSuccess ? 'Successfully Updated!' : 'Update Password'}
                                     </Button>
+                                    
+                                    {passwordSuccess && (
+                                        <p className="text-[10px] text-green-400 font-bold text-center mt-2 animate-pulse uppercase tracking-widest">
+                                            Password Refinement Complete
+                                        </p>
+                                    )}
                                 </div>
                             )}
                         </Card>

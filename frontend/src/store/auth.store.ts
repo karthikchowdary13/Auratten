@@ -13,6 +13,7 @@ interface User {
     mobileNumber?: string | null;
     updatedAt: string;
     createdAt: string;
+    passwordUpdatedAt?: string;
     institution?: {
         id: string;
         name: string;
