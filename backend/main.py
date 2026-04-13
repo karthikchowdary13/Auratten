@@ -18,8 +18,22 @@ import models.login_log
 # create database tables if they don't exist
 Base.metadata.create_all(bind=engine)
 
+def ensure_columns():
+    from sqlalchemy import text
+    with engine.connect() as conn:
+        print("Checking for missing columns...")
+        # Add status if missing
+        try:
+            conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS status VARCHAR DEFAULT 'PENDING'"))
+            conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS last_active TIMESTAMP WITH TIME ZONE"))
+            conn.commit()
+            print("Database columns synchronized.")
+        except Exception as e:
+            print(f"Migration notice (likely already exists): {e}")
+
 # initialization to ensure 3 sections and 120 students exist
 def initialize_data():
+    ensure_columns()
     db = SessionLocal()
     try:
         from models.user import User
