@@ -253,6 +253,16 @@ export const adminApi = {
     
     getSettings: (): ApiResponse => api.get('/admin/settings'),
     updateSettings: (data: any): ApiResponse => api.patch('/admin/settings', data),
+    
+    overrideAttendance: (data: { userId: number, sessionId: number, status: string }): ApiResponse =>
+        api.post('/admin/attendance/override', data),
+    generateManualQR: (data: { sectionId: number, institutionId: string }): ApiResponse =>
+        api.post('/admin/sessions/manual-qr', data),
+        
+    getExportUrl: (institutionId?: string) => {
+        const baseUrl = process.env.NEXT_PUBLIC_API_BASE;
+        return `${baseUrl}/admin/reports/export-csv${institutionId ? `?institution_id=${institutionId}` : ''}`;
+    }
 };
 
 export const downloadFile = async (url: string, filename: string) => {

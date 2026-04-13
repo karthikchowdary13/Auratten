@@ -67,25 +67,30 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
     return new_user
 
 @router.post("/login", response_model=Token)
-def login(login_data: LoginRequest, db: Session = Depends(get_db)):
+def login(login_data: LoginRequest, request: Request, db: Session = Depends(get_db)):
     # enforce lowercase for email consistency
     email = login_data.email.lower().strip()
-    
-    print(f"Login attempt for email: {email}")
-    
-    # verify credentials and return jwt token
     user = db.query(User).filter(User.email == email).first()
     
-    # check if user exists and password is correct
     if not user or not verify_password(login_data.password, user.password):
-        print(f"Login failed for {email}: {'User not found' if not user else 'Invalid password'}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail={"message": "Incorrect email or password"},
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+    # Log login and update user
+    from models.login_log import LoginLog
+    from sqlalchemy.sql import func
+    from datetime import datetime
     
-    print(f"Login successful for: {email} (ID: {user.id})")
+    user.last_active = datetime.utcnow()
+    db.add(LoginLog(
+        user_id=user.id, 
+        ip_address=request.client.host,
+        user_agent=request.headers.get("user-agent")
+    ))
+    db.commit()
     
     # generate the tokens
     access_token = create_access_token(
@@ -95,22 +100,11 @@ def login(login_data: LoginRequest, db: Session = Depends(get_db)):
         data={"sub": user.email}, expires_delta=timedelta(days=7)
     )
     
-    # ensure role is uppercase for frontend compatibility
-    user_data = UserOut(
-        id=user.id,
-        name=user.name,
-        email=user.email,
-        mobileNumber=user.mobile_number,
-        role=user.role.upper(),
-        institutionId=user.institution_id,
-        createdAt=user.created_at
-    )
-    
     return {
         "accessToken": access_token, 
         "refreshToken": refresh_token,
         "token_type": "bearer",
-        "user": user_data
+        "user": user # SQLAlchemy model will be parsed by UserOut
     }
 
 @router.post("/verify-password")

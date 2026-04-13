@@ -12,7 +12,8 @@ from models.fraud_log import FraudLog
 from schemas.admin import (
     AdminStats, InstitutionCreate, InstitutionResponse, 
     SystemSettingsResponse, SystemSettingsUpdate, 
-    AuditLogResponse, UserAdminUpdate
+    AuditLogResponse, UserAdminUpdate,
+    AttendanceOverride, ManualQRGenerate
 )
 from schemas.auth import UserOut as UserResponse
 from routes.auth import get_current_user
@@ -189,3 +190,96 @@ async def update_settings(
     
     log_action(db, current_user.id, "SETTINGS_UPDATE", "SYSTEM", "0", update.dict(), request.client.host)
     return settings
+
+# --- Attendance & QR Control ---
+@router.post("/attendance/override")
+async def override_attendance(
+    data: AttendanceOverride, 
+    request: Request,
+    db: Session = Depends(get_db), 
+    current_user: User = Depends(get_current_user)
+):
+    if current_user.role not in ["SUPER_ADMIN", "ADMIN", "INSTITUTION_ADMIN"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    # Check if record exists
+    record = db.query(Attendance).filter(
+        Attendance.user_id == data.user_id,
+        Attendance.session_id == data.session_id
+    ).first()
+    
+    if record:
+        record.status = data.status
+    else:
+        record = Attendance(
+            user_id=data.user_id,
+            session_id=data.session_id,
+            status=data.status
+        )
+        db.add(record)
+    
+    db.commit()
+    log_action(db, current_user.id, "ATTENDANCE_OVERRIDE", "ATTENDANCE", f"{data.user_id}_{data.session_id}", data.dict(), request.client.host)
+    return {"message": f"Attendance marked as {data.status}"}
+
+@router.post("/sessions/manual-qr")
+async def generate_manual_qr(
+    data: ManualQRGenerate, 
+    request: Request,
+    db: Session = Depends(get_db), 
+    current_user: User = Depends(get_current_user)
+):
+    if current_user.role not in ["SUPER_ADMIN", "ADMIN", "INSTITUTION_ADMIN"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    import uuid
+    token = str(uuid.uuid4())[:8].upper()
+    
+    new_session = QRSession(
+        section_id=data.section_id,
+        created_by_id=current_user.id,
+        token=token,
+        is_active=True
+    )
+    db.add(new_session)
+    db.commit()
+    db.refresh(new_session)
+    
+    log_action(db, current_user.id, "MANUAL_QR_GENERATE", "SESSION", str(new_session.id), {"token": token}, request.client.host)
+    return {"session_id": new_session.id, "token": token}
+
+# --- Reports Export ---
+@router.get("/reports/export-csv")
+async def export_attendance_csv(
+    institution_id: Optional[str] = None,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if current_user.role not in ["SUPER_ADMIN", "ADMIN"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    import csv
+    import io
+    from fastapi.responses import StreamingResponse
+    
+    # Query attendance records
+    query = db.query(Attendance)
+    if institution_id:
+        from models.section import Section
+        query = query.join(QRSession).join(Section).filter(Section.institution_id == institution_id)
+    
+    records = query.all()
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["ID", "User ID", "User Name", "Session ID", "Status", "Scanned At"])
+    
+    for r in records:
+        writer.writerow([r.id, r.user_id, r.user.name if r.user else "Unknown", r.session_id, r.status, r.scanned_at])
+    
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=attendance_report.csv"}
+    )

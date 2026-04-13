@@ -13,6 +13,7 @@ import models.institution
 import models.audit_log
 import models.settings
 import models.fraud_log
+import models.login_log
 
 # create database tables if they don't exist
 Base.metadata.create_all(bind=engine)

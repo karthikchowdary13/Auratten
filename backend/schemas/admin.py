@@ -62,3 +62,12 @@ class AdminStats(BaseModel):
     total_institutions: int
     live_sessions: int
     pending_approvals: int
+
+class AttendanceOverride(BaseModel):
+    user_id: int
+    session_id: int
+    status: str # PRESENT, ABSENT
+    
+class ManualQRGenerate(BaseModel):
+    section_id: int
+    institution_id: str

@@ -116,7 +116,13 @@ export default function AdminReports() {
                             </div>
                         </div>
                         <div className="flex items-end">
-                            <button className="w-full bg-white text-black text-sm font-bold py-2.5 rounded-xl hover:bg-white/80 transition-all shadow-xl shadow-white/10">
+                            <button 
+                                onClick={() => {
+                                    const url = adminApi.getExportUrl();
+                                    import('@/lib/api').then(m => m.downloadFile(url, 'attendance_report.csv'));
+                                }}
+                                className="w-full bg-white text-black text-sm font-bold py-2.5 rounded-xl hover:bg-white/80 transition-all shadow-xl shadow-white/10"
+                            >
                                 Generate & Download
                             </button>
                         </div>
