@@ -15,7 +15,7 @@ from schemas.admin import (
     AuditLogResponse, UserAdminUpdate
 )
 from schemas.auth import UserOut as UserResponse
-from utils.auth import get_current_user
+from routes.auth import get_current_user
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
