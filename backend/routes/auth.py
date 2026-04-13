@@ -6,7 +6,7 @@ from datetime import timedelta
 
 from database import get_db
 from models.user import User
-from schemas.auth import UserCreate, UserOut, LoginRequest, Token, TokenData, VerifyPasswordRequest
+from schemas.auth import UserCreate, UserOut, LoginRequest, Token, TokenData, VerifyPasswordRequest, TokenRefreshRequest
 from utils.auth import get_password_hash, verify_password, create_access_token, ALGORITHM
 from config import settings
 
@@ -124,3 +124,54 @@ def verify_user_password(
             detail="Incorrect password",
         )
     return {"valid": True}
+    
+@router.post("/refresh", response_model=Token)
+def refresh(refresh_data: TokenRefreshRequest, db: Session = Depends(get_db)):
+    # dependency to get the currently logged in user
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate refresh token",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    
+    try:
+        # decode jwt refresh token
+        payload = jwt.decode(refresh_data.refreshToken, settings.JWT_SECRET, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+        
+    user = db.query(User).filter(User.email == email).first()
+    if user is None:
+        raise credentials_exception
+        
+    print(f"Token refreshed for: {email}")
+    
+    # generate new tokens
+    access_token = create_access_token(
+        data={"sub": user.email}, expires_delta=timedelta(minutes=30)
+    )
+    refresh_token = create_access_token(
+        data={"sub": user.email}, expires_delta=timedelta(days=7)
+    )
+    
+    # ensure role is uppercase for frontend compatibility
+    user_data = UserOut(
+        id=user.id,
+        name=user.name,
+        email=user.email,
+        mobile_number=user.mobile_number,
+        role=user.role.upper(),
+        institution_id=user.institution_id,
+        created_at=user.created_at
+    )
+    
+    return {
+        "accessToken": access_token, 
+        "refreshToken": refresh_token,
+        "token_type": "bearer",
+        "user": user_data
+    }
+

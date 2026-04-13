@@ -235,6 +235,26 @@ export const notificationsApi = {
         api.post(`/notifications/notify-parent/${studentId}`),
 };
 
+export const adminApi = {
+    getStats: (): ApiResponse => api.get('/admin/stats'),
+    getUsers: (status?: string, role?: string): ApiResponse<AuthUser[]> => {
+        const params = new URLSearchParams();
+        if (status) params.append('status', status);
+        if (role) params.append('role', role);
+        return api.get(`/admin/users?${params.toString()}`);
+    },
+    updateUser: (id: string, data: any): ApiResponse<AuthUser> => api.patch(`/admin/users/${id}`, data),
+    deleteUser: (id: string): ApiResponse => api.delete(`/admin/users/${id}`),
+    
+    getInstitutions: (): ApiResponse<any[]> => api.get('/admin/institutions'),
+    createInstitution: (data: any): ApiResponse => api.post('/admin/institutions', data),
+    
+    getAuditLogs: (): ApiResponse<any[]> => api.get('/admin/audit-logs'),
+    
+    getSettings: (): ApiResponse => api.get('/admin/settings'),
+    updateSettings: (data: any): ApiResponse => api.patch('/admin/settings', data),
+};
+
 export const downloadFile = async (url: string, filename: string) => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
     const response = await fetch(url, {

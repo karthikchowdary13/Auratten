@@ -11,7 +11,9 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     mobile_number = Column(String, nullable=True)
     password = Column(String)
-    role = Column(String, default="student") # student, teacher, admin
+    role = Column(String, default="STUDENT") # STUDENT, TEACHER, INSTITUTION_ADMIN, SUPER_ADMIN
     institution_id = Column(String, nullable=True)
+    status = Column(String, default="PENDING") # PENDING, ACTIVE, REJECTED, SUSPENDED
     
+    last_active = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

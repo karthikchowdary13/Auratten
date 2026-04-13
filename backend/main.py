@@ -3,12 +3,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from config import settings
 
-from routes import auth, sections, users, qr
+from routes import auth, sections, users, qr, attendance, dashboard, reports
 from database import engine, Base, SessionLocal
 import models.user 
 import models.section
 import models.qr_session
 import models.attendance
+import models.institution
+import models.audit_log
+import models.settings
+import models.fraud_log
 
 # create database tables if they don't exist
 Base.metadata.create_all(bind=engine)
@@ -28,7 +32,44 @@ def initialize_data():
                 u.email = u.email.lower().strip()
         db.commit()
 
-        # 2. Seed 3 sections x 40 students if roster is empty
+        # 2. Ensure main teacher exists (critical for persistence across recycles)
+        teacher_email = "karthikmb77@gmail.com"
+        teacher = db.query(User).filter(User.email == teacher_email).first()
+        if not teacher:
+            print(f"Seeding main teacher: {teacher_email}")
+            teacher = User(
+                name="Karthik Chowdary",
+                email=teacher_email,
+                password=get_password_hash("Srikar@0417"),
+                role="TEACHER",
+                institution_id="auratten_main",
+                status="ACTIVE"
+            )
+            db.add(teacher)
+            db.commit()
+
+        # 3. Ensure Super Admin exists
+        admin_email = "admin@auratten.com"
+        admin = db.query(User).filter(User.email == admin_email).first()
+        if not admin:
+            print(f"Seeding super admin: {admin_email}")
+            admin = User(
+                name="Auratten Admin",
+                email=admin_email,
+                password=get_password_hash("admin123"),
+                role="SUPER_ADMIN",
+                status="ACTIVE"
+            )
+            db.add(admin)
+            db.commit()
+
+        # 4. Ensure Default Settings exist
+        from models.settings import SystemSettings
+        if not db.query(SystemSettings).first():
+            db.add(SystemSettings())
+            db.commit()
+
+        # 5. Seed 3 sections x 40 students if roster is empty
         institution_id = "auratten_main"
         if db.query(User).filter(User.role == "student").count() < 100:
             print("Seeding requested 120 students across 3 sections...")
@@ -66,7 +107,7 @@ def initialize_data():
                     link = db.query(SectionStudent).filter(
                         SectionStudent.section_id == section.id,
                         SectionStudent.user_id == user.id
-                    ).first()
+                     ).first()
                     if not link:
                         db.add(SectionStudent(section_id=section.id, user_id=user.id))
             db.commit()
@@ -129,8 +170,6 @@ async def global_exception_handler(request, exc):
     )
 
 # register routers
-from routes import auth, sections, users, qr, attendance, dashboard, reports
-# ...
 app.include_router(auth.router)
 app.include_router(sections.router)
 app.include_router(users.router)
@@ -138,6 +177,10 @@ app.include_router(qr.router)
 app.include_router(attendance.router)
 app.include_router(dashboard.router)
 app.include_router(reports.router)
+
+# Import and include admin router
+from routes import admin
+app.include_router(admin.router)
 
 @app.get("/health")
 def health_check():

@@ -51,20 +51,24 @@ export default function Sidebar() {
                     { name: 'Students', icon: Users, href: '/dashboard/users' },
                     { name: 'Reports', icon: BarChart3, href: '/dashboard/reports' },
                 ];
-            case 'HR':
+            case 'INSTITUTION_ADMIN':
                 return [
                     ...baseItems,
-                    { name: 'Staff Management', icon: Users, href: '/dashboard/users' },
-                    { name: 'Leave Requests', icon: Calendar, href: '/hr/leave' },
-                    { name: 'Payroll', icon: Briefcase, href: '/hr/payroll' },
+                    { name: 'Institutions', icon: ShieldCheck, href: '/admin/institutions' },
+                    { name: 'User Management', icon: Users, href: '/admin/users' },
+                    { name: 'Attendance & QR', icon: QrCode, href: '/admin/attendance' },
+                    { name: 'Reports', icon: BarChart3, href: '/admin/reports' },
                 ];
+            case 'SUPER_ADMIN':
             case 'ADMIN':
                 return [
                     ...baseItems,
-                    { name: 'Institutions', icon: ShieldCheck, href: '/dashboard/institutions' },
-                    { name: 'Sections', icon: Layers, href: '/dashboard/sections' },
-                    { name: 'User Management', icon: Users, href: '/dashboard/users' },
-                    { name: 'System Logs', icon: Settings, href: '/admin/logs' },
+                    { name: 'User Management', icon: Users, href: '/admin/users' },
+                    { name: 'Institutions', icon: ShieldCheck, href: '/admin/institutions' },
+                    { name: 'Attendance & QR', icon: QrCode, href: '/admin/attendance' },
+                    { name: 'Reports', icon: BarChart3, href: '/admin/reports' },
+                    { name: 'Audit Log', icon: ShieldCheck, href: '/admin/audit-logs' },
+                    { name: 'Settings', icon: Settings, href: '/admin/settings' },
                 ];
             default:
                 return baseItems;

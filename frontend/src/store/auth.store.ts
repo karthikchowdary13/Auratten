@@ -6,7 +6,7 @@ interface User {
     id: string;
     email: string;
     name: string;
-    role: 'STUDENT' | 'TEACHER' | 'PARENT' | 'ADMIN' | 'HR';
+    role: 'STUDENT' | 'TEACHER' | 'INSTITUTION_ADMIN' | 'SUPER_ADMIN' | 'ADMIN';
     institutionId: string | null;
     sectionId?: string | null;
     avatar?: string | null;

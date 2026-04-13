@@ -12,4 +12,4 @@ def check_user_email(email):
             print(f"User with email {email} DOES NOT exist in database.")
 
 if __name__ == "__main__":
-    check_user_email("karthikchowdary1315@gmail.com")
+    check_user_email("karthikmb77@gmail.com")

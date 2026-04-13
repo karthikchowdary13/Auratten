@@ -21,6 +21,8 @@ class UserOut(BaseModel):
     mobile_number: Optional[str] = Field(None, alias="mobileNumber")
     role: str = Field(alias="role")
     institution_id: Optional[str] = Field(None, alias="institutionId")
+    status: str = Field("PENDING", alias="status")
+    last_active: Optional[datetime] = Field(None, alias="lastActive")
     created_at: datetime = Field(alias="createdAt")
 
     class Config:
@@ -46,3 +48,7 @@ class TokenData(BaseModel):
 # schema for password verification
 class VerifyPasswordRequest(BaseModel):
     password: str
+
+# schema for token refresh
+class TokenRefreshRequest(BaseModel):
+    refreshToken: str
