@@ -24,6 +24,7 @@ class UserOut(BaseModel):
     status: str = Field("PENDING", alias="status")
     last_active: Optional[datetime] = Field(None, alias="lastActive")
     created_at: datetime = Field(alias="createdAt")
+    password_updated_at: Optional[datetime] = Field(None, alias="passwordUpdatedAt")
 
     class Config:
         from_attributes = True
@@ -52,3 +53,10 @@ class VerifyPasswordRequest(BaseModel):
 # schema for token refresh
 class TokenRefreshRequest(BaseModel):
     refreshToken: str
+
+class ChangePasswordRequest(BaseModel):
+    currentPassword: str = Field(alias="currentPassword")
+    newPassword: str = Field(alias="newPassword")
+    
+    class Config:
+        populate_by_name = True

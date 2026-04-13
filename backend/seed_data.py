@@ -13,8 +13,8 @@ from utils.auth import get_password_hash
 from datetime import datetime, timedelta
 
 def seed():
-    print("Dropping all tables to reset schema...")
-    Base.metadata.drop_all(bind=engine)
+    # print("Dropping all tables to reset schema...")
+    # Base.metadata.drop_all(bind=engine)
     print("Creating all tables...")
     Base.metadata.create_all(bind=engine)
     

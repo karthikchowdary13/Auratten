@@ -41,6 +41,7 @@ export interface AuthUser {
     avatar?: string | null;
     createdAt: string;
     updatedAt?: string;
+    passwordUpdatedAt?: string;
 }
 
 interface SuccessResponse<T> {
@@ -123,7 +124,7 @@ export const authApi = {
     getProfile: (): ApiResponse<AuthUser> => api.get('/auth/me'),
     verifyPassword: (password: string): ApiResponse<{ valid: boolean }> =>
         api.post('/auth/verify-password', { password }),
-    changePassword: (data: any): ApiResponse => api.post('/change-password', data),
+    changePassword: (data: any): ApiResponse => api.post('/auth/change-password', data),
     sendOtp: (identifier: string, type: 'EMAIL' | 'MOBILE'): ApiResponse<{ success: boolean }> =>
         api.post('/auth/send-auth-otp', { identifier, type }),
     verifyOtp: (identifier: string, code: string, type: 'EMAIL' | 'MOBILE'): ApiResponse<{ success: boolean }> =>

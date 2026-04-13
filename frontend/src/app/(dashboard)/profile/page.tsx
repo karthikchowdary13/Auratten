@@ -45,8 +45,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
 
 export default function ProfilePage() {
-    const user = useAuthStore((state) => state.user);
+    const { user, updateUser: updateUserStore } = useAuthStore();
     const queryClient = useQueryClient();
+    const { showToast } = useToast();
     
     // Section 1: Identity State
     const [isEditingName, setIsEditingName] = useState(false);
@@ -170,12 +171,23 @@ export default function ProfilePage() {
 
     const changePasswordMutation = useMutation({
         mutationFn: () => authApi.changePassword({ currentPassword, newPassword }),
-        onSuccess: () => {
+        onSuccess: (res) => {
+            if (res.error) {
+                showToast('error', 'Update Failed', res.error);
+                return;
+            }
+            showToast('success', 'Security Updated', 'Your password has been changed successfully.');
             setCurrentPassword('');
             setNewPassword('');
             setConfirmPassword('');
+            setIsPasswordChangeOpen(false);
+            
+            // update local password update timestamp if we want, or just let it be next refresh
+            if (user) updateUserStore({ ...user, passwordUpdatedAt: new Date().toISOString() });
         },
-        onError: (error: any) => console.error(error.message || 'Password update failed')
+        onError: (error: any) => {
+            showToast('error', 'Critical Error', error.message || 'Password update failed');
+        }
     });
 
     const deleteAccountMutation = useMutation({
@@ -440,7 +452,7 @@ export default function ProfilePage() {
                             >
                                 <div>
                                     <p className="text-sm font-semibold text-foreground">Password</p>
-                                    <p className="text-xs text-muted-foreground mt-0.5">Last updated: {user?.updatedAt ? new Date(user.updatedAt).toLocaleDateString() : 'Never'}</p>
+                                    <p className="text-xs text-muted-foreground mt-0.5">Last updated: {user?.passwordUpdatedAt ? new Date(user.passwordUpdatedAt).toLocaleDateString() : 'Never'}</p>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <span className="text-xs font-semibold text-primary">Change</span>

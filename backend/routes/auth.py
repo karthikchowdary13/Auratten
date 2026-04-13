@@ -2,11 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from database import get_db
 from models.user import User
-from schemas.auth import UserCreate, UserOut, LoginRequest, Token, TokenData, VerifyPasswordRequest, TokenRefreshRequest
+from schemas.auth import (
+    UserCreate, UserOut, LoginRequest, Token, TokenData, 
+    VerifyPasswordRequest, TokenRefreshRequest, ChangePasswordRequest
+)
 from utils.auth import get_password_hash, verify_password, create_access_token, ALGORITHM
 from config import settings
 
@@ -168,4 +171,22 @@ def refresh(refresh_data: TokenRefreshRequest, db: Session = Depends(get_db)):
         "token_type": "bearer",
         "user": user_data
     }
+
+@router.post("/change-password")
+def change_password(
+    data: ChangePasswordRequest, 
+    db: Session = Depends(get_db), 
+    current_user: User = Depends(get_current_user)
+):
+    if not verify_password(data.currentPassword, current_user.password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect current password",
+        )
+    
+    current_user.password = get_password_hash(data.newPassword)
+    current_user.password_updated_at = datetime.utcnow()
+    db.commit()
+    
+    return {"message": "Password changed successfully"}
 

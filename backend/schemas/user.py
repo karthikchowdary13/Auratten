@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
 from typing import Optional
 from .auth import UserOut
@@ -9,8 +9,11 @@ class UserList(BaseModel):
     name: str
     email: EmailStr
     role: str
+    created_at: Optional[datetime] = Field(None, alias="createdAt")
+    last_active: Optional[datetime] = Field(None, alias="lastActive")
 
     class Config:
+        populate_by_name = True
         from_attributes = True
 
 # detailed user info with attendance placeholder
