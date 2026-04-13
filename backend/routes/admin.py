@@ -14,7 +14,7 @@ from schemas.admin import (
     SystemSettingsResponse, SystemSettingsUpdate, 
     AuditLogResponse, UserAdminUpdate
 )
-from schemas.user import UserResponse
+from schemas.auth import UserOut as UserResponse
 from utils.auth import get_current_user
 
 router = APIRouter(prefix="/admin", tags=["admin"])
