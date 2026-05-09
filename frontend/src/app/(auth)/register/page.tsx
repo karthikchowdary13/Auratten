@@ -96,7 +96,7 @@ export default function RegisterPage() {
     };
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center p-4 sm:p-8 relative">
+        <div className="min-h-screen w-full flex items-center justify-center p-4 sm:p-8 relative bg-[#060608] overflow-hidden">
             <style jsx global>{`
                 input:-webkit-autofill,
                 input:-webkit-autofill:hover, 
