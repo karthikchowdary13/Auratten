@@ -43,6 +43,7 @@ import Modal from '@/components/ui/Modal';
 import { authApi, qrApi, attendanceApi, usersApi } from '@/lib/api';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/context/ToastContext';
 
 export default function ProfilePage() {
     const { user, updateUser: updateUserStore } = useAuthStore();
@@ -118,7 +119,7 @@ export default function ProfilePage() {
                 return;
             }
             setIsEditingName(false);
-            if (res.data) updateUserStore(res.data);
+            if (res.data) updateUserStore(res.data as any);
         },
         onError: (error: any) => console.error(error.message || 'Update failed')
     });
@@ -131,7 +132,7 @@ export default function ProfilePage() {
                 return;
             }
             setIsContactInfoOpen(false);
-            if (res.data) updateUserStore(res.data);
+            if (res.data) updateUserStore(res.data as any);
         },
         onError: (error: any) => console.error(error.message || 'Update contact failed')
     });

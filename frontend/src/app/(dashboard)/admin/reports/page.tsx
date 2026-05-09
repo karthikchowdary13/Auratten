@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { adminApi } from '@/lib/api';
 import RoleGuard from '@/components/auth/RoleGuard';
 import { 
     BarChart3, 
