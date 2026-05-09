@@ -35,8 +35,11 @@
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 263.4 70% 50.4%;
-    --primary-foreground: 210 40% 98%;
+    
+    /* FAANG Minimalist Monochrome (White on Dark) */
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 3.7% 15.9%;
@@ -47,19 +50,16 @@
     --destructive-foreground: 0 0% 98%;
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 263.4 70% 50.4%;
+    --ring: 0 0% 98%;
     --radius: 0.75rem;
 
-    /* Missing Custom Core Variables */
-    --bg-primary: #09090b;
-    --bg-surface: #18181b;
-    --bg-surface-hover: #27272a;
+    /* Custom Core Variables */
+    --bg-primary: #060608;
+    --bg-surface: #0e0e11;
+    --bg-surface-hover: #16161a;
     --text-primary: #ffffff;
-    --text-secondary: rgba(255, 255, 255, 0.8);
-    --text-muted: rgba(255, 255, 255, 0.5);
-    --accent: hsl(263.4, 70%, 50.4%);
-    --accent-hover: hsl(263.4, 70%, 40%);
-    --accent-muted: hsla(263.4, 70%, 50.4%, 0.1);
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-muted: rgba(255, 255, 255, 0.4);
     --error: #ef4444;
     --error-muted: rgba(239, 68, 68, 0.1);
 
@@ -77,28 +77,29 @@
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-    --primary: 263.4 70% 50.4%;
-    --primary-foreground: 210 40% 98%;
+    
+    /* FAANG Minimalist Monochrome (Black on Light) */
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
-    --accent: hsl(263.4, 70%, 50.4%);
-    --accent-foreground: hsl(210, 40%, 98%);
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 263.4 70% 50.4%;
+    --ring: 240 5.9% 10%;
 
-    --bg-primary: #f8fafc;
-    --bg-surface: #ffffff;
     --bg-primary: #ffffff;
-    --bg-surface: #f1f5f9;
-    --bg-surface-hover: #e2e8f0;
-    --text-primary: #020617;
+    --bg-surface: #f8fafc;
+    --bg-surface-hover: #f1f5f9;
+    --text-primary: #0f172a;
     --text-secondary: #334155;
-    --text-muted: #475569;
+    --text-muted: #64748b;
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
     --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -160,7 +161,7 @@ html {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(127, 119, 221, 0.5); /* Brand color (purple) pulse */
+  background: rgba(255, 255, 255, 0.3); /* Minimalist monochrome pulse */
   border-width: 2px;
 }
 
@@ -180,7 +181,7 @@ html {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(127, 119, 221, 0.4);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Buttery Transitions for interactive elements */
@@ -212,7 +213,7 @@ a, button, input, select, textarea, [role="button"] {
   }
 
   .text-gradient-primary {
-    background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+    background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.4) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

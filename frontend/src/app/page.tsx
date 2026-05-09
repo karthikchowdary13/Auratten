@@ -15,38 +15,38 @@ const features: Feature[] = [
     title: 'Instant QR Generation',
     desc: 'Generate dynamic, time-limited QR codes for any session in seconds.',
     icon: QrCode,
-    color: '#6366f1',
+    color: 'var(--text-primary)',
   },
   {
     title: 'Real-Time Tracking',
     desc: 'See attendance as it happens — no delays, no manual entry.',
     icon: Activity,
-    color: '#22c55e',
+    color: 'var(--text-secondary)',
   },
   {
     title: 'Anti-Spoofing Security',
     desc: 'Device fingerprinting and IP validation prevent proxy attendance fraud.',
     icon: ShieldCheck,
-    color: '#f43f5e',
+    color: 'var(--text-primary)',
   },
   {
     title: 'Role-Based Access',
     desc: 'Separate views and permissions for Students, Teachers, HR, and Admins.',
     icon: Users,
-    color: '#f59e0b',
+    color: 'var(--text-secondary)',
   },
   {
     title: 'Instant Reports',
     desc: 'Export attendance summaries per session, user, or institution.',
     icon: FileText,
-    color: '#8b5cf6',
+    color: 'var(--text-primary)',
   },
   {
     title: 'Multi-Institution',
     desc: 'Manage dozens of institutions and departments from one account.',
     icon: Building2,
-    color: '#06b6d4',
-  },
+    color: 'var(--text-secondary)',
+  }
 ];
 
 export default function LandingPage() {
@@ -107,7 +107,7 @@ export default function LandingPage() {
                 className={styles.featureCard}
                 style={{ '--feature-color': color } as React.CSSProperties}
               >
-                <div className={styles.featureIcon} style={{ background: `${color}15` }}>
+                <div className={styles.featureIcon} style={{ background: 'var(--bg-surface-hover)' }}>
                    <Icon size={32} color={color} className={styles.featureIconSvg} />
                 </div>
                 <h3 className={styles.featureTitle}>{title}</h3>
