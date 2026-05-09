@@ -63,7 +63,7 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center p-4 sm:p-8 relative bg-gray-50 dark:bg-[#060608] overflow-hidden transition-colors duration-500">
+        <div className="min-h-[100dvh] w-full flex items-center justify-center p-4 sm:p-8 relative bg-gray-50 dark:bg-[#060608] overflow-hidden transition-colors duration-500">
              <style jsx global>{`
                 input:-webkit-autofill,
                 input:-webkit-autofill:hover, 
@@ -121,8 +121,8 @@ export default function LoginPage() {
                 </div>
 
                 {/* RIGHT PANEL - Form */}
-                <div className="p-8 sm:p-12 lg:p-16 flex flex-col justify-center bg-transparent">
-                    <div className="lg:hidden flex items-center gap-3 mb-10">
+                <div className="p-6 sm:p-10 lg:p-16 flex flex-col justify-center bg-transparent w-full max-w-md lg:max-w-none mx-auto">
+                    <div className="lg:hidden flex items-center gap-3 mb-8 sm:mb-10">
                         <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                             <img 
                                 src="/auratten-logos/logo-main.png" 
