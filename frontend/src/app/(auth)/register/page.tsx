@@ -141,23 +141,23 @@ export default function RegisterPage() {
                     </div>
 
                     <div className="relative z-10 flex flex-col gap-3">
-                        <div className="flex items-center gap-4 bg-white/[0.02] border border-white/[0.05] p-4 rounded-2xl hover:bg-white/[0.04] transition-colors cursor-default">
-                            <div className="w-10 h-10 bg-white/[0.05] border border-white/[0.05] rounded-xl flex items-center justify-center">
-                                <Shield className="text-white/80 h-5 w-5" />
+                        <div className="flex items-center gap-4 bg-white/[0.02] border border-white/[0.05] p-4 rounded-2xl hover:bg-white/[0.06] hover:border-white/[0.1] hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/[0.02] transition-all duration-300 cursor-default group">
+                            <div className="w-10 h-10 bg-white/[0.05] border border-white/[0.05] rounded-xl flex items-center justify-center group-hover:bg-white/[0.1] group-hover:scale-110 group-hover:border-white/[0.1] transition-all duration-300">
+                                <Shield className="text-white/80 group-hover:text-white h-5 w-5 transition-colors duration-300" />
                             </div>
                             <div>
-                                <h4 className="text-white/90 font-semibold text-sm">Enterprise Grade Security</h4>
-                                <p className="text-white/40 text-xs mt-0.5">End-to-end encrypted sessions</p>
+                                <h4 className="text-white/90 font-semibold text-sm group-hover:text-white transition-colors duration-300">Enterprise Grade Security</h4>
+                                <p className="text-white/40 text-xs mt-0.5 group-hover:text-white/60 transition-colors duration-300">End-to-end encrypted sessions</p>
                             </div>
                         </div>
                         
-                        <div className="flex items-center gap-4 bg-white/[0.02] border border-white/[0.05] p-4 rounded-2xl hover:bg-white/[0.04] transition-colors cursor-default">
-                            <div className="w-10 h-10 bg-white/[0.05] border border-white/[0.05] rounded-xl flex items-center justify-center">
-                                <CheckCircle2 className="text-white/80 h-5 w-5" />
+                        <div className="flex items-center gap-4 bg-white/[0.02] border border-white/[0.05] p-4 rounded-2xl hover:bg-white/[0.06] hover:border-white/[0.1] hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/[0.02] transition-all duration-300 cursor-default group">
+                            <div className="w-10 h-10 bg-white/[0.05] border border-white/[0.05] rounded-xl flex items-center justify-center group-hover:bg-white/[0.1] group-hover:scale-110 group-hover:border-white/[0.1] transition-all duration-300">
+                                <CheckCircle2 className="text-white/80 group-hover:text-white h-5 w-5 transition-colors duration-300" />
                             </div>
                             <div>
-                                <h4 className="text-white/90 font-semibold text-sm">Real-time Analytics</h4>
-                                <p className="text-white/40 text-xs mt-0.5">Instant insights and reporting</p>
+                                <h4 className="text-white/90 font-semibold text-sm group-hover:text-white transition-colors duration-300">Real-time Analytics</h4>
+                                <p className="text-white/40 text-xs mt-0.5 group-hover:text-white/60 transition-colors duration-300">Instant insights and reporting</p>
                             </div>
                         </div>
                     </div>
