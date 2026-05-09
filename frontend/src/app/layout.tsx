@@ -3,6 +3,7 @@ import './globals.css';
 import { ToastProvider } from '@/context/ToastContext';
 import OfflineSync from '@/components/OfflineSync';
 import PrismBackground from '@/components/PrismBackground';
+import SmoothScroll from '@/components/SmoothScroll';
 
 export const metadata: Metadata = {
   title: 'Auratten',
@@ -49,8 +50,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           {/* Content layer */}
           <div className="relative z-10 flex flex-col min-h-screen">
-            {children}
-            <OfflineSync />
+            <SmoothScroll>
+              {children}
+              <OfflineSync />
+            </SmoothScroll>
           </div>
         </ToastProvider>
       </body>
