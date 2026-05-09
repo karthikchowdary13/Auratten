@@ -34,38 +34,39 @@
 
 /* Variants */
 .primary {
-    background: var(--accent);
-    color: #fff;
-    box-shadow: 0 0 20px rgba(108, 99, 255, 0.25);
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    box-shadow: 0 4px 14px 0 rgba(0,0,0,0.1);
 }
 
 .primary:hover:not(:disabled) {
-    background: var(--accent-hover);
-    box-shadow: 0 0 28px rgba(108, 99, 255, 0.4);
+    opacity: 0.9;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
     transform: translateY(-1px);
 }
 
 .secondary {
-    background: rgba(108, 99, 255, 0.1);
-    color: var(--accent);
-    border: 1px solid rgba(108, 99, 255, 0.25);
+    background: transparent;
+    color: hsl(var(--foreground));
+    border: 1px solid hsl(var(--border));
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .secondary:hover:not(:disabled) {
-    background: rgba(108, 99, 255, 0.2);
-    border-color: var(--accent);
+    background: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+    border-color: hsl(var(--border));
     transform: translateY(-1px);
 }
 
 .ghost {
-    background: rgba(108, 99, 255, 0.08);
-    color: var(--accent);
+    background: transparent;
+    color: hsl(var(--foreground));
 }
 
 .ghost:hover:not(:disabled) {
-    background: rgba(108, 99, 255, 0.15);
-    color: var(--accent);
+    background: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
 }
 
 .danger {

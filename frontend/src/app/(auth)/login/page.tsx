@@ -76,14 +76,14 @@ export default function LoginPage() {
             `}</style>
 
             {/* Ambient Background Glows */}
-            <div className="fixed top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-100/50 via-gray-50 to-gray-50 dark:from-[#13111C] dark:via-[#0a0a0c] dark:to-[#0a0a0c] pointer-events-none -z-10 transition-colors duration-500" />
+            <div className="fixed top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-200/50 via-gray-50 to-gray-50 dark:from-[#13111C] dark:via-[#0a0a0c] dark:to-[#0a0a0c] pointer-events-none -z-10 transition-colors duration-500" />
 
             <div className="w-full max-w-[1200px] grid lg:grid-cols-2 bg-white/80 dark:bg-[#0C0C0E]/80 backdrop-blur-3xl border border-gray-200 dark:border-white/[0.08] rounded-3xl shadow-2xl overflow-hidden relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-700 transition-colors duration-500">
                 
                 {/* LEFT PANEL - Premium Branding (Hidden on Mobile) */}
                 <div className="hidden lg:flex flex-col justify-between p-16 bg-gray-50/50 dark:bg-[#0E0E11]/50 border-r border-gray-200 dark:border-white/[0.05] relative overflow-hidden transition-colors duration-500">
-                    {/* Subtle noise texture */}
-                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
+                    {/* Subtle overlay */}
+                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay bg-black dark:bg-white"></div>
                     
                     <div className="relative z-10">
                         <Link href="/" className="inline-flex items-center gap-3 mb-16 hover:opacity-80 transition-opacity">
@@ -110,10 +110,10 @@ export default function LoginPage() {
                     <div className="relative z-10 flex flex-col gap-3">
                         <div className="flex items-center gap-4 bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05] p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/[0.06] hover:border-gray-300 dark:hover:border-white/[0.1] hover:-translate-y-0.5 hover:shadow-lg hover:shadow-gray-200/50 dark:hover:shadow-2xl dark:hover:shadow-white/[0.02] transition-all duration-300 cursor-default group">
                             <div className="w-10 h-10 bg-gray-50 dark:bg-white/[0.05] border border-gray-100 dark:border-white/[0.05] rounded-xl flex items-center justify-center group-hover:bg-gray-100 dark:group-hover:bg-white/[0.1] group-hover:scale-110 group-hover:border-gray-200 dark:group-hover:border-white/[0.1] transition-all duration-300">
-                                <Shield className="text-gray-600 dark:text-white/80 group-hover:text-indigo-600 dark:group-hover:text-white h-5 w-5 transition-colors duration-300" />
+                                <Shield className="text-gray-600 dark:text-white/80 group-hover:text-zinc-900 dark:group-hover:text-white h-5 w-5 transition-colors duration-300" />
                             </div>
                             <div>
-                                <h4 className="text-gray-900 dark:text-white/90 font-semibold text-sm group-hover:text-indigo-900 dark:group-hover:text-white transition-colors duration-300">Secure Session</h4>
+                                <h4 className="text-gray-900 dark:text-white/90 font-semibold text-sm group-hover:text-zinc-900 dark:group-hover:text-white transition-colors duration-300">Secure Session</h4>
                                 <p className="text-gray-500 dark:text-white/40 text-xs mt-0.5 group-hover:text-gray-700 dark:group-hover:text-white/60 transition-colors duration-300">Your data is fully encrypted</p>
                             </div>
                         </div>
@@ -149,13 +149,14 @@ export default function LoginPage() {
                         <div className="space-y-1.5">
                             <label className="text-[11px] font-semibold text-gray-600 dark:text-white/60 transition-colors duration-500">Institution Email</label>
                             <div className="relative group">
-                                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-white/20 group-focus-within:text-indigo-500 dark:group-focus-within:text-white/70 transition-colors" />
+                                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-white/20 group-focus-within:text-zinc-900 dark:group-focus-within:text-white/70 transition-colors" />
                                 <input
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="name@institution.com"
-                                    className="w-full pl-10 pr-4 h-11 bg-gray-50 dark:bg-white/[0.03] hover:bg-gray-100 dark:hover:bg-white/[0.05] border border-gray-200 dark:border-white/[0.08] rounded-xl focus:border-indigo-500 dark:focus:border-white/20 focus:bg-white dark:focus:bg-white/[0.05] focus:ring-4 focus:ring-indigo-500/10 dark:focus:ring-0 transition-all outline-none text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-white/20"
+                                    className="w-full pl-10 pr-4 h-11 bg-gray-50 dark:bg-white/[0.03] hover:bg-gray-100 dark:hover:bg-white/[0.05] border border-gray-200 dark:border-white/[0.08] rounded-xl focus:border-zinc-900 dark:focus:border-white/20 focus:bg-white dark:focus:bg-white/[0.05] focus:ring-4 focus:ring-zinc-900/10 dark:focus:ring-0 transition-all outline-none text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-white/20"
                                     type="email"
+                                    autoComplete="email"
                                     required
                                     disabled={loading}
                                 />
@@ -165,13 +166,14 @@ export default function LoginPage() {
                         <div className="space-y-1.5">
                             <label className="text-[11px] font-semibold text-gray-600 dark:text-white/60 transition-colors duration-500">Password</label>
                             <div className="relative group">
-                                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-white/20 group-focus-within:text-indigo-500 dark:group-focus-within:text-white/70 transition-colors" />
+                                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-white/20 group-focus-within:text-zinc-900 dark:group-focus-within:text-white/70 transition-colors" />
                                 <input
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="••••••••"
                                     type="password"
-                                    className="w-full pl-10 pr-4 h-11 bg-gray-50 dark:bg-white/[0.03] hover:bg-gray-100 dark:hover:bg-white/[0.05] border border-gray-200 dark:border-white/[0.08] rounded-xl focus:border-indigo-500 dark:focus:border-white/20 focus:bg-white dark:focus:bg-white/[0.05] focus:ring-4 focus:ring-indigo-500/10 dark:focus:ring-0 transition-all outline-none text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-white/20"
+                                    autoComplete="current-password"
+                                    className="w-full pl-10 pr-4 h-11 bg-gray-50 dark:bg-white/[0.03] hover:bg-gray-100 dark:hover:bg-white/[0.05] border border-gray-200 dark:border-white/[0.08] rounded-xl focus:border-zinc-900 dark:focus:border-white/20 focus:bg-white dark:focus:bg-white/[0.05] focus:ring-4 focus:ring-zinc-900/10 dark:focus:ring-0 transition-all outline-none text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-white/20"
                                     required
                                     disabled={loading}
                                 />
@@ -197,7 +199,7 @@ export default function LoginPage() {
 
                         <p className="text-center text-[13px] text-gray-500 dark:text-white/40 pt-4 transition-colors duration-500">
                             Don&apos;t have an account?{' '}
-                            <Link href="/register" className="text-indigo-600 dark:text-primary hover:text-indigo-700 dark:hover:text-primary/80 font-bold transition-all ml-1">
+                            <Link href="/register" className="text-zinc-900 dark:text-white hover:text-zinc-600 dark:hover:text-white/80 font-bold transition-all ml-1 underline decoration-zinc-900/20 hover:decoration-zinc-900/50 dark:decoration-white/20 dark:hover:decoration-white/50 underline-offset-4">
                                 Sign up
                             </Link>
                         </p>

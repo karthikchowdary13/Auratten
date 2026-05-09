@@ -4,31 +4,24 @@ import Link from 'next/link';
 import { Sun, Moon } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import styles from './Navbar.module.css';
+import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
 export default function Navbar() {
-    const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+    const { theme, setTheme } = useTheme();
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
-        if (savedTheme) {
-            setTheme(savedTheme);
-            if (savedTheme === 'light') {
-                document.documentElement.classList.add('light');
-            }
-        }
+        setMounted(true);
     }, []);
 
     const toggleTheme = () => {
-        const newTheme = theme === 'dark' ? 'light' : 'dark';
-        setTheme(newTheme);
-        localStorage.setItem('theme', newTheme);
-        if (newTheme === 'light') {
-            document.documentElement.classList.add('light');
-        } else {
-            document.documentElement.classList.remove('light');
-        }
+        setTheme(theme === 'dark' ? 'light' : 'dark');
     };
+
+    if (!mounted) {
+        return null; // Avoid hydration mismatch
+    }
 
     return (
         <nav className={styles.navbar}>

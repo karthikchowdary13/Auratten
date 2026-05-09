@@ -4,6 +4,7 @@ import { ToastProvider } from '@/context/ToastContext';
 import OfflineSync from '@/components/OfflineSync';
 import PrismBackground from '@/components/PrismBackground';
 import SmoothScroll from '@/components/SmoothScroll';
+import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
   title: 'Auratten',
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -33,29 +34,36 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="apple-touch-icon" href="/auratten-logos/logo-mobile.png" />
       </head>
       <body suppressHydrationWarning className="min-h-screen bg-background relative selection:bg-primary/30 selection:text-white">
-        <ToastProvider>
-          {/* Fixed background layer */}
-          <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
-            <PrismBackground 
-              animationType="3drotate"
-              scale={3.5}
-              glow={0.6}
-              noise={0.3}
-              timeScale={0.3}
-              bloom={0.8}
-            />
-            {/* Subtle overlay to darken and blend further for readability */}
-            <div className="absolute inset-0 bg-background/70 backdrop-blur-[1px]" />
-          </div>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ToastProvider>
+            {/* Fixed background layer */}
+            <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
+              <PrismBackground 
+                animationType="3drotate"
+                scale={3.5}
+                glow={0.6}
+                noise={0.3}
+                timeScale={0.3}
+                bloom={0.8}
+              />
+              {/* Subtle overlay to darken and blend further for readability */}
+              <div className="absolute inset-0 bg-background/70 backdrop-blur-[1px]" />
+            </div>
 
-          {/* Content layer */}
-          <div className="relative z-10 flex flex-col min-h-screen">
-            <SmoothScroll>
-              {children}
-              <OfflineSync />
-            </SmoothScroll>
-          </div>
-        </ToastProvider>
+            {/* Content layer */}
+            <div className="relative z-10 flex flex-col min-h-screen">
+              <SmoothScroll>
+                {children}
+                <OfflineSync />
+              </SmoothScroll>
+            </div>
+          </ToastProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
