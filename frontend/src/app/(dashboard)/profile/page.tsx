@@ -109,7 +109,6 @@ export default function ProfilePage() {
     });
 
     // Mutations
-    const updateUserStore = useAuthStore((state) => state.updateUser);
 
     const updateNameMutation = useMutation({
         mutationFn: (newName: string) => usersApi.update(user!.id, { name: newName }),
