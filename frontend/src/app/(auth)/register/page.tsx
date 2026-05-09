@@ -119,14 +119,14 @@ export default function RegisterPage() {
                     <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
                     
                     <div className="relative z-10">
-                        <div className="inline-flex items-center gap-3 mb-16">
+                        <Link href="/" className="inline-flex items-center gap-3 mb-16 hover:opacity-80 transition-opacity">
                             <img 
                                 src="/auratten-logos/logo-main.png" 
                                 alt="Auratten Logo" 
                                 className="h-8 object-contain"
                             />
                             <span className="text-gray-900 dark:text-white font-bold text-xl tracking-tight transition-colors duration-500">Auratten</span>
-                        </div>
+                        </Link>
                         
                         <h2 className="text-[2.75rem] font-bold text-gray-900 dark:text-white mb-6 leading-[1.1] tracking-tighter transition-colors duration-500">
                             Smart Attendance,<br/>
@@ -166,12 +166,14 @@ export default function RegisterPage() {
                 {/* RIGHT PANEL - Form */}
                 <div className="p-6 sm:p-10 lg:p-16 flex flex-col justify-center bg-transparent w-full max-w-md lg:max-w-none mx-auto">
                     <div className="lg:hidden flex items-center gap-3 mb-8 sm:mb-10">
-                        <img 
-                            src="/auratten-logos/logo-main.png" 
-                            alt="Auratten Logo" 
-                            className="w-8 h-8 object-contain"
-                        />
-                        <span className="text-gray-900 dark:text-white font-bold text-xl tracking-tight transition-colors duration-500">Auratten</span>
+                        <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                            <img 
+                                src="/auratten-logos/logo-main.png" 
+                                alt="Auratten Logo" 
+                                className="w-8 h-8 object-contain"
+                            />
+                            <span className="text-gray-900 dark:text-white font-bold text-xl tracking-tight transition-colors duration-500">Auratten</span>
+                        </Link>
                     </div>
 
                     <div className="mb-10">
