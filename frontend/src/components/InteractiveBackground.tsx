@@ -125,8 +125,7 @@ export default function InteractiveBackground() {
             <div 
                 className="absolute inset-[-100px] bg-gradient-to-br from-primary/10 to-accent/10 backdrop-blur-[4px]"
                 style={{
-                    transform: `translate(var(--bg-move-x, 0px), calc(var(--bg-move-y, 0px) - var(--bg-scroll-y, 0px))) scale(var(--bg-scale, 1))`,
-                    transition: 'transform 0.1s ease-out'
+                    transform: `translate3d(var(--bg-move-x, 0px), calc(var(--bg-move-y, 0px) - var(--bg-scroll-y, 0px)), 0px) scale(var(--bg-scale, 1))`,
                 }}
             />
             
@@ -141,15 +140,13 @@ export default function InteractiveBackground() {
             <div 
                 className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl"
                 style={{
-                    transform: `translate(calc(var(--bg-move-x, 0px) * 2), calc(var(--bg-move-y, 0px) * 2 - var(--bg-scroll-y, 0px) * 1.5))`,
-                    transition: 'transform 0.15s ease-out'
+                    transform: `translate3d(calc(var(--bg-move-x, 0px) * 2), calc(var(--bg-move-y, 0px) * 2 - var(--bg-scroll-y, 0px) * 1.5), 0px)`,
                 }}
             />
             <div 
                 className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/20 rounded-full blur-3xl"
                 style={{
-                    transform: `translate(calc(var(--bg-move-x, 0px) * -1.5), calc(var(--bg-move-y, 0px) * -1.5 - var(--bg-scroll-y, 0px) * 0.5))`,
-                    transition: 'transform 0.2s ease-out'
+                    transform: `translate3d(calc(var(--bg-move-x, 0px) * -1.5), calc(var(--bg-move-y, 0px) * -1.5 - var(--bg-scroll-y, 0px) * 0.5), 0px)`,
                 }}
             />
         </div>
