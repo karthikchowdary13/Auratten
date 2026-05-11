@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 export default function ThreeBackground() {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -37,7 +38,7 @@ export default function ThreeBackground() {
             emissiveIntensity: 0.2,
         });
 
-        // Create a Stylized Humanoid Figure
+        // Create a Stylized Humanoid Figure (Fallback)
         const character = new THREE.Group();
 
         // Torso
@@ -64,7 +65,7 @@ export default function ThreeBackground() {
         const phoneMat = new THREE.MeshPhysicalMaterial({
             color: 0xc8f560, // Electric lime
             emissive: 0xc8f560,
-            emissiveIntensity: 1.0, // Make it glow bright like a screen
+            emissiveIntensity: 1.0, 
         });
         const phone = new THREE.Mesh(phoneGeom, phoneMat);
         phone.position.set(0.7, 0.7, 0.5);
@@ -78,6 +79,38 @@ export default function ThreeBackground() {
         character.add(leftArm);
 
         scene.add(character);
+
+        // Load Realistic Model if available
+        const loader = new GLTFLoader();
+        loader.load(
+            '/man_holding_phone.glb', // Path to the file you will add
+            (gltf) => {
+                // Remove fallback
+                scene.remove(character);
+                
+                // Add realistic model
+                const model = gltf.scene;
+                model.scale.set(1.5, 1.5, 1.5); // Adjust scale
+                model.position.y = -1; // Adjust position
+                
+                // Apply glass material to all meshes in the model for that Oryzo look
+                model.traverse((child) => {
+                    if ((child as THREE.Mesh).isMesh) {
+                        (child as THREE.Mesh).material = material;
+                    }
+                });
+                
+                scene.add(model);
+                
+                // Reference for animation
+                (window as any).active3DModel = model;
+            },
+            undefined,
+            (error) => {
+                console.log('Using fallback 3D model. Add a file to public/man_holding_phone.glb to replace it.');
+                (window as any).active3DModel = character;
+            }
+        );
         
         // Adjust camera to fit the character
         camera.position.z = 4;
@@ -100,14 +133,15 @@ export default function ThreeBackground() {
 
         const animate = () => {
             const elapsedTime = clock.getElapsedTime();
+            const model = (window as any).active3DModel || character;
 
             // Auto rotation
-            character.rotation.y = elapsedTime * 0.2;
+            model.rotation.y = elapsedTime * 0.2;
 
             // Scroll interaction (Read from window)
             const scrollY = window.scrollY;
-            character.position.y = 0.5 - scrollY * 0.002; // Keep camera offset
-            character.rotation.y = elapsedTime * 0.2 + scrollY * 0.001;
+            model.position.y = 0.5 - scrollY * 0.002; // Keep camera offset
+            model.rotation.y = elapsedTime * 0.2 + scrollY * 0.001;
 
             renderer.render(scene, camera);
             requestAnimationFrame(animate);
