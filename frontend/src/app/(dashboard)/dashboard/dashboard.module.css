@@ -33,19 +33,23 @@
 }
 
 .statCard {
-    background: var(--bg-surface);
-    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--radius);
     padding: 22px;
     display: flex;
     align-items: center;
     gap: 16px;
-    transition: border-color 0.18s, transform 0.18s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .statCard:hover {
-    border-color: var(--accent);
-    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .statIcon {
@@ -108,19 +112,22 @@
 }
 
 .activityCard {
-    background: var(--bg-surface);
-    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: var(--radius);
     padding: 16px 20px;
     display: flex;
     align-items: center;
     gap: 16px;
-    transition: transform 0.2s, border-color 0.2s;
+    transition: all 0.3s ease;
 }
 
 .activityCard:hover {
     transform: translateX(4px);
-    border-color: var(--accent);
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.04);
 }
 
 .activityIcon {
