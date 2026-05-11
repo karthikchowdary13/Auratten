@@ -42,21 +42,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           disableTransitionOnChange
         >
           <ToastProvider>
-            <InteractiveBackground />
-            {/* Fixed background layer */}
-            <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
-              <PrismBackground 
-                animationType="3drotate"
-                scale={3.5}
-                glow={0.6}
-                noise={0.3}
-                timeScale={0.3}
-                bloom={0.8}
-              />
-              {/* Subtle overlay to darken and blend further for readability */}
-              <div className="absolute inset-0 bg-background/70 backdrop-blur-[1px]" />
-            </div>
-
             {/* Content layer */}
             <div className="relative z-10 flex flex-col min-h-screen">
               <SmoothScroll>
