@@ -4,6 +4,7 @@ import { ToastProvider } from '@/context/ToastContext';
 import OfflineSync from '@/components/OfflineSync';
 import InteractiveBackground from '@/components/InteractiveBackground';
 import PrismBackground from '@/components/PrismBackground';
+import ThreeBackground from '@/components/ThreeBackground';
 import SmoothScroll from '@/components/SmoothScroll';
 import { ThemeProvider } from '@/components/theme-provider';
 
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           disableTransitionOnChange
         >
           <ToastProvider>
+            <ThreeBackground />
             {/* Content layer */}
             <div className="relative z-10 flex flex-col min-h-screen">
               <SmoothScroll>
