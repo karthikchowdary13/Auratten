@@ -464,7 +464,22 @@
             border: 1px solid var(--border);
             padding: 3rem;
             border-radius: 12px;
-            margin-bottom: 2rem;
+            scroll-snap-align: center;
+            flex: 0 0 400px;
+            transition: transform 0.3s ease;
+        }
+
+        .slider-container {
+            display: flex;
+            gap: 2rem;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            padding: 2rem 0;
+            scrollbar-width: none;
+        }
+
+        .slider-container::-webkit-scrollbar {
+            display: none;
         }
 
         .stars {
@@ -784,9 +799,7 @@
             <div class="section-header fade-in">
                 <h2 class="section-title">Loved by Leaders.</h2>
                 <p class="section-subtitle">Hear from the people who use Auratten every day.</p>
-            </div>
-
-            <div class="grid-3 fade-in">
+            <div class="slider-container fade-in">
                 <!-- 1 -->
                 <div class="testimonial-card">
                     <div class="stars">★★★★★</div>
