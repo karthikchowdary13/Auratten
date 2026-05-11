@@ -95,18 +95,26 @@ export default function InteractiveBackground() {
             setMouse({ x: e.clientX, y: e.clientY });
             
             // Update CSS variables for moving glass effect
-            const moveX = (e.clientX - window.innerWidth / 2) / 50;
-            const moveY = (e.clientY - window.innerHeight / 2) / 50;
+            const moveX = (e.clientX - window.innerWidth / 2) / 30; // More powerful
+            const moveY = (e.clientY - window.innerHeight / 2) / 30;
             
             document.documentElement.style.setProperty('--bg-move-x', `${moveX}px`);
             document.documentElement.style.setProperty('--bg-move-y', `${moveY}px`);
         };
 
+        const handleScroll = () => {
+            const scrollY = window.scrollY;
+            document.documentElement.style.setProperty('--bg-scroll-y', `${scrollY * 0.5}px`); // Parallax effect
+            document.documentElement.style.setProperty('--bg-scale', `${1 + scrollY * 0.0005}`); // Scale effect
+        };
+
         window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('scroll', handleScroll);
         const rafId = requestAnimationFrame(animate);
 
         return () => {
             window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('scroll', handleScroll);
             cancelAnimationFrame(rafId);
         };
     }, [dimensions, mouse.x, mouse.y]);
@@ -115,9 +123,9 @@ export default function InteractiveBackground() {
         <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
             {/* Moving Glass Layer */}
             <div 
-                className="absolute inset-[-50px] bg-gradient-to-br from-primary/5 to-accent/5 backdrop-blur-[2px]"
+                className="absolute inset-[-100px] bg-gradient-to-br from-primary/10 to-accent/10 backdrop-blur-[4px]"
                 style={{
-                    transform: `translate(var(--bg-move-x, 0px), var(--bg-move-y, 0px))`,
+                    transform: `translate(var(--bg-move-x, 0px), calc(var(--bg-move-y, 0px) - var(--bg-scroll-y, 0px))) scale(var(--bg-scale, 1))`,
                     transition: 'transform 0.1s ease-out'
                 }}
             />
@@ -131,16 +139,16 @@ export default function InteractiveBackground() {
             
             {/* Ambient Glows */}
             <div 
-                className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl"
+                className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl"
                 style={{
-                    transform: `translate(calc(var(--bg-move-x, 0px) * 2), calc(var(--bg-move-y, 0px) * 2))`,
+                    transform: `translate(calc(var(--bg-move-x, 0px) * 2), calc(var(--bg-move-y, 0px) * 2 - var(--bg-scroll-y, 0px) * 1.5))`,
                     transition: 'transform 0.15s ease-out'
                 }}
             />
             <div 
-                className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl"
+                className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/20 rounded-full blur-3xl"
                 style={{
-                    transform: `translate(calc(var(--bg-move-x, 0px) * -1.5), calc(var(--bg-move-y, 0px) * -1.5))`,
+                    transform: `translate(calc(var(--bg-move-x, 0px) * -1.5), calc(var(--bg-move-y, 0px) * -1.5 - var(--bg-scroll-y, 0px) * 0.5))`,
                     transition: 'transform 0.2s ease-out'
                 }}
             />
