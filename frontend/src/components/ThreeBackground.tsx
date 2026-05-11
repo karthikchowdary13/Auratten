@@ -24,9 +24,6 @@ export default function ThreeBackground() {
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         container.appendChild(renderer.domElement);
 
-        // Objects
-        const geometry = new THREE.TorusKnotGeometry(1.5, 0.4, 120, 20);
-        
         // Premium Glass/Metal Material
         const material = new THREE.MeshPhysicalMaterial({
             color: 0x888888,
@@ -39,9 +36,52 @@ export default function ThreeBackground() {
             emissive: 0xc8f560, // Electric lime glow
             emissiveIntensity: 0.2,
         });
+
+        // Create a Stylized Humanoid Figure
+        const character = new THREE.Group();
+
+        // Torso
+        const torsoGeom = new THREE.CylinderGeometry(0.4, 0.2, 1.8, 16);
+        const torso = new THREE.Mesh(torsoGeom, material);
+        character.add(torso);
+
+        // Head
+        const headGeom = new THREE.SphereGeometry(0.25, 16, 16);
+        const head = new THREE.Mesh(headGeom, material);
+        head.position.y = 1.2;
+        character.add(head);
+
+        // Right Arm (Holding Phone)
+        const armGeom = new THREE.CylinderGeometry(0.08, 0.08, 0.8, 16);
+        const rightArm = new THREE.Mesh(armGeom, material);
+        rightArm.position.set(0.5, 0.4, 0.3);
+        rightArm.rotation.z = -Math.PI / 4;
+        rightArm.rotation.x = Math.PI / 4;
+        character.add(rightArm);
+
+        // Phone
+        const phoneGeom = new THREE.BoxGeometry(0.1, 0.2, 0.02);
+        const phoneMat = new THREE.MeshPhysicalMaterial({
+            color: 0xc8f560, // Electric lime
+            emissive: 0xc8f560,
+            emissiveIntensity: 1.0, // Make it glow bright like a screen
+        });
+        const phone = new THREE.Mesh(phoneGeom, phoneMat);
+        phone.position.set(0.7, 0.7, 0.5);
+        phone.rotation.y = -Math.PI / 4;
+        character.add(phone);
+
+        // Left Arm (Relaxed)
+        const leftArm = new THREE.Mesh(armGeom, material);
+        leftArm.position.set(-0.5, 0.2, 0);
+        leftArm.rotation.z = Math.PI / 12;
+        character.add(leftArm);
+
+        scene.add(character);
         
-        const mesh = new THREE.Mesh(geometry, material);
-        scene.add(mesh);
+        // Adjust camera to fit the character
+        camera.position.z = 4;
+        camera.position.y = 0.5;
 
         // Lights
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -62,13 +102,12 @@ export default function ThreeBackground() {
             const elapsedTime = clock.getElapsedTime();
 
             // Auto rotation
-            mesh.rotation.y = elapsedTime * 0.2;
-            mesh.rotation.x = elapsedTime * 0.1;
+            character.rotation.y = elapsedTime * 0.2;
 
             // Scroll interaction (Read from window)
             const scrollY = window.scrollY;
-            mesh.position.y = -scrollY * 0.002;
-            mesh.rotation.z = scrollY * 0.001;
+            character.position.y = 0.5 - scrollY * 0.002; // Keep camera offset
+            character.rotation.y = elapsedTime * 0.2 + scrollY * 0.001;
 
             renderer.render(scene, camera);
             requestAnimationFrame(animate);
@@ -90,7 +129,6 @@ export default function ThreeBackground() {
             if (container.contains(renderer.domElement)) {
                 container.removeChild(renderer.domElement);
             }
-            geometry.dispose();
             material.dispose();
             renderer.dispose();
         };
