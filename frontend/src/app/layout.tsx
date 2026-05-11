@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { ToastProvider } from '@/context/ToastContext';
 import OfflineSync from '@/components/OfflineSync';
+import InteractiveBackground from '@/components/InteractiveBackground';
 import PrismBackground from '@/components/PrismBackground';
 import SmoothScroll from '@/components/SmoothScroll';
 import { ThemeProvider } from '@/components/theme-provider';
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           disableTransitionOnChange
         >
           <ToastProvider>
+            <InteractiveBackground />
             {/* Fixed background layer */}
             <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
               <PrismBackground 
