@@ -95,7 +95,7 @@ export default function ThreeBackground() {
                 model.position.y = -1; // Adjust position
                 
                 // Apply glass material to all meshes in the model for that Oryzo look
-                model.traverse((child) => {
+                model.traverse((child: any) => {
                     if ((child as THREE.Mesh).isMesh) {
                         (child as THREE.Mesh).material = material;
                     }
