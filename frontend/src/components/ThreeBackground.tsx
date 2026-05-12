@@ -22,36 +22,45 @@ function buildScene(isDark: boolean): {
     cleanup: () => void;
 } {
     // ── Palette ────────────────────────────────────────────────
+    // Butterscotch warm palette — both modes
     const C = {
-        bg:          isDark ? 0x07090f : 0xdaeaf5,
-        fog:         isDark ? 0x07090f : 0xc5ddef,
-        ground:      isDark ? 0x0d1420 : 0xbfd4c8,
-        path:        isDark ? 0x131d2e : 0xd0dde4,
-        pathEdge:    isDark ? 0x1a2840 : 0xb8cad2,
-        wall:        isDark ? 0x1b2645 : 0xccd9e6,
-        wallDark:    isDark ? 0x141d36 : 0xb8c8d8,
-        column:      isDark ? 0x22305a : 0xd4e0ec,
-        roofBand:    isDark ? 0x1e2b50 : 0xbacad8,
-        window:      isDark ? 0xf0b840 : 0x90b8d8,
-        windowLit:   isDark ? 0xffd060 : 0x70a0c8,
-        gate:        isDark ? 0x1e2c50 : 0xb0c2d2,
-        gateAccent:  isDark ? 0x2a3e6a : 0xc8d8e4,
-        step:        isDark ? 0x182038 : 0xc4d4e0,
-        treeFoliage: isDark ? 0x163a1e : 0x4a7c48,
-        treeTrunk:   isDark ? 0x28190a : 0x6a4820,
-        lampPost:    isDark ? 0x2a3a5e : 0x9ab0c0,
-        lampGlow:    isDark ? 0xffe060 : 0xffeeaa,
+        // Background & atmosphere: warm amber/butterscotch sky
+        bg:          isDark ? 0x3b1f08 : 0xf5d898,
+        fog:         isDark ? 0x3b1f08 : 0xedcc80,
+        // Ground: warm earthy tones
+        ground:      isDark ? 0x261408 : 0xc8a048,
+        path:        isDark ? 0x341b0c : 0xe0c070,
+        pathEdge:    isDark ? 0x421f0e : 0xd0b058,
+        // Building: warm sandstone/cream
+        wall:        isDark ? 0x5a3c20 : 0xf0ddb0,
+        wallDark:    isDark ? 0x3e2810 : 0xe0c898,
+        column:      isDark ? 0x6a4828 : 0xf8ead8,
+        roofBand:    isDark ? 0x4a3018 : 0xd4b878,
+        // Windows: glowing warm yellow
+        window:      isDark ? 0xf5c840 : 0xe8d070,
+        windowLit:   isDark ? 0xffd868 : 0xf5e060,
+        // Gate: warm caramel
+        gate:        isDark ? 0x4e3018 : 0xd4a850,
+        gateAccent:  isDark ? 0x6a4020 : 0xe8c078,
+        step:        isDark ? 0x3c2410 : 0xdcbc80,
+        // Trees
+        treeFoliage: isDark ? 0x224418 : 0x5a9040,
+        treeTrunk:   isDark ? 0x3a2010 : 0x8a5830,
+        // Street furniture
+        lampPost:    isDark ? 0x5a3c20 : 0xb89060,
+        lampGlow:    0xffe060,
+        // Students
         skin:        isDark ? 0xc8956a : 0xd4a870,
-        pants:       isDark ? 0x2a3550 : 0x4a5a6e,
-        shoes:       isDark ? 0x1a1a28 : 0x404050,
+        pants:       isDark ? 0x3a2c1a : 0x5a4a38,
+        shoes:       isDark ? 0x1e1208 : 0x382818,
     };
 
-    const shirtColors  = isDark
-        ? [0x3a5278, 0x4d3a6e, 0x2e5e5e, 0x5e4a2e, 0x4a4a72, 0x5e3a3a]
-        : [0x5878a0, 0x7c5898, 0x489090, 0x908858, 0x6868a0, 0x9a5858];
-    const bagColors    = isDark
-        ? [0x8c3e2e, 0x2e6890, 0x3e8040, 0x7e6e2e]
-        : [0xc06040, 0x4080b0, 0x509848, 0xa09040];
+    const shirtColors = isDark
+        ? [0x7a4e28, 0x5e3a22, 0x6a5828, 0x4a6030, 0x603838, 0x485870]
+        : [0xc08050, 0xa07040, 0x90a050, 0x7080a0, 0xa06050, 0x708060];
+    const bagColors = isDark
+        ? [0x8a3020, 0x283e78, 0x305828, 0x786020]
+        : [0xd05030, 0x3060a0, 0x408038, 0xa08830];
 
     // ── Scene ──────────────────────────────────────────────────
     const scene = new THREE.Scene();
@@ -432,17 +441,19 @@ function buildScene(isDark: boolean): {
     }
 
     // ══════════════════════════════════════════════════════════
-    // LIGHTING
+    // LIGHTING — warm butterscotch sun
     // ══════════════════════════════════════════════════════════
+    // Warm amber ambient — bathes everything in golden light
     const ambient = new THREE.AmbientLight(
-        isDark ? 0x3a4f70 : 0xc8ddf0,
-        isDark ? 0.7 : 1.1
+        isDark ? 0x7a5030 : 0xf0c878,
+        isDark ? 0.8 : 1.0
     );
     scene.add(ambient);
 
+    // Golden-hour sun
     const sun = new THREE.DirectionalLight(
-        isDark ? 0x8fa8cc : 0xfff8e8,
-        isDark ? 0.9 : 1.6
+        isDark ? 0xf5a040 : 0xfff0c0,
+        isDark ? 1.2 : 1.8
     );
     sun.position.set(12, 18, 12);
     sun.castShadow = true;
@@ -454,24 +465,30 @@ function buildScene(isDark: boolean): {
     sun.shadow.bias = -0.001;
     scene.add(sun);
 
-    // Fill light from opposite side
+    // Warm fill from opposite side
     const fill = new THREE.DirectionalLight(
-        isDark ? 0x3a5080 : 0xddeeff,
-        isDark ? 0.3 : 0.5
+        isDark ? 0xe08020 : 0xf8d888,
+        isDark ? 0.4 : 0.6
     );
-    fill.position.set(-10, 8, 10);
+    fill.position.set(-10, 6, 10);
     scene.add(fill);
 
-    // Window glow (dark mode)
-    if (isDark) {
-        const winGlow = new THREE.PointLight(0xffc840, 1.0, 9);
-        winGlow.position.set(0, 1, -6);
-        scene.add(winGlow);
+    // Window glow — warm amber point lights
+    const winGlow = new THREE.PointLight(0xffc840, isDark ? 1.4 : 0.6, 10);
+    winGlow.position.set(0, 1, -6);
+    scene.add(winGlow);
 
-        const winGlow2 = new THREE.PointLight(0xff9030, 0.6, 7);
-        winGlow2.position.set(-5, 2, -7);
-        scene.add(winGlow2);
-    }
+    const winGlow2 = new THREE.PointLight(0xff9828, isDark ? 0.9 : 0.4, 8);
+    winGlow2.position.set(-5, 2, -7);
+    scene.add(winGlow2);
+
+    // Warm sky dome — bounce light from below
+    const skyLight = new THREE.HemisphereLight(
+        isDark ? 0xf5a040 : 0xfde890,  // sky
+        isDark ? 0x3a2010 : 0xc89840,  // ground
+        isDark ? 0.5 : 0.7
+    );
+    scene.add(skyLight);
 
     const cleanup = () => { /* handled by caller */ };
     return { scene, camera, renderer, students, cleanup };
