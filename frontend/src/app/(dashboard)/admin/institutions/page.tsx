@@ -110,7 +110,7 @@ export default function InstitutionManagement() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {loading ? (
                         <div className="col-span-full flex flex-col items-center py-20 gap-3">
-                            <Loader2 className="animate-spin text-primary" size={32} />
+                            <Loader2 className="smooth-loader text-primary" size={32} />
                             <p className="text-white/40">Syncing institutions...</p>
                         </div>
                     ) : institutions.length === 0 ? (

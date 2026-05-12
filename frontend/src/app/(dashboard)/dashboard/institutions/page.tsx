@@ -146,7 +146,7 @@ export default function InstitutionsPage() {
 
             {loading ? (
                 <div className={styles.loadingWrapper}>
-                    <Loader2 size={40} className="animate-spin" />
+                    <Loader2 size={40} className="smooth-loader" />
                     <p>Loading your institutions...</p>
                 </div>
             ) : (

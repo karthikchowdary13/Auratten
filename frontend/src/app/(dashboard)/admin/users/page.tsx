@@ -94,7 +94,7 @@ export default function UserManagement() {
                 <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden overflow-x-auto">
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-20 gap-3">
-                            <Loader2 className="animate-spin text-primary" size={32} />
+                            <Loader2 className="smooth-loader text-primary" size={32} />
                             <p className="text-white/40 animate-pulse">Loading user database...</p>
                         </div>
                     ) : filteredUsers.length === 0 ? (

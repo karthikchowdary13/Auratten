@@ -39,7 +39,7 @@ export default function AdminSettings() {
 
     if (loading) return (
         <div className="flex flex-col items-center justify-center py-20 gap-3 text-white/40">
-            <Loader2 className="animate-spin text-primary" size={32} />
+            <Loader2 className="smooth-loader text-primary" size={32} />
             <p>Loading system configuration...</p>
         </div>
     );
@@ -57,7 +57,7 @@ export default function AdminSettings() {
                         disabled={saving}
                         className="bg-primary text-primary-foreground px-6 py-2.5 rounded-xl font-semibold flex items-center gap-2 hover:opacity-90 transition-all disabled:opacity-50"
                     >
-                        {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
+                        {saving ? <Loader2 className="smooth-loader" size={18} /> : <Save size={18} />}
                         Save Changes
                     </button>
                 </div>

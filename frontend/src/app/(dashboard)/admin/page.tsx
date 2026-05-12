@@ -76,7 +76,7 @@ export default function AdminDashboard() {
                             <button className="text-xs text-primary hover:underline">View all</button>
                         </div>
                         {loading ? (
-                            <div className="flex justify-center p-8"><Clock className="animate-spin" /></div>
+                            <div className="flex justify-center p-8"><Clock className="smooth-loader" /></div>
                         ) : stats?.pending_approvals === 0 ? (
                             <div className="text-center py-12 text-white/40">
                                 <CheckCircle2 size={40} className="mx-auto mb-3 opacity-20" />

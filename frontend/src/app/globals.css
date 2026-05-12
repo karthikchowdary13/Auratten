@@ -271,4 +271,20 @@ a, button, input, select, textarea, [role="button"] {
   .pulse-green { 
     animation: dotPulse 2s infinite; 
   }
+
+  @keyframes smoothSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .smooth-loader {
+    animation: smoothSpin 0.8s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite;
+  }
+  
+  .css-loader {
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-top-color: currentColor;
+    animation: smoothSpin 0.8s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite;
+  }
 }

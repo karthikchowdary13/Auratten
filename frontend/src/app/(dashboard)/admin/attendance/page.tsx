@@ -60,7 +60,7 @@ export default function AdminAttendance() {
                             </div>
                             
                             {loading ? (
-                                <div className="p-20 flex justify-center"><Loader2 className="animate-spin text-primary" /></div>
+                                <div className="p-20 flex justify-center"><Loader2 className="smooth-loader text-primary" /></div>
                             ) : (
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-left">

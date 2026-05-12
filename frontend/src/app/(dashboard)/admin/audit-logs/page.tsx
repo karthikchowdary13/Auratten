@@ -46,7 +46,7 @@ export default function AuditLogs() {
                 <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-20 gap-3">
-                            <Loader2 className="animate-spin text-primary" size={32} />
+                            <Loader2 className="smooth-loader text-primary" size={32} />
                             <p className="text-white/40">Fetching security logs...</p>
                         </div>
                     ) : logs.length === 0 ? (

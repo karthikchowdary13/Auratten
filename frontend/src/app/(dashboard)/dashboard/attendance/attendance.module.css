@@ -247,8 +247,9 @@
 
 .sessionItem:hover {
     border-color: var(--accent);
-    transform: translateX(4px);
-    background: rgba(99, 102, 241, 0.02);
+    transform: translateY(-3px) scale(1.01);
+    background: rgba(255, 255, 255, 0.03);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 .sessionMain {
@@ -541,6 +542,13 @@
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 24px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sideCard:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
 }
 
 .sideCard h3 {

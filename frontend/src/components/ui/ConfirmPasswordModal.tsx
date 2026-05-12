@@ -76,7 +76,7 @@ export default function ConfirmPasswordModal({
                         disabled={loading || !password}
                     >
                         {loading ? (
-                            <><Loader2 size={16} className="animate-spin" style={{ marginRight: 8 }} /> Verifying...</>
+                            <><Loader2 size={16} className="smooth-loader" style={{ marginRight: 8 }} /> Verifying...</>
                         ) : (
                             'Confirm & Update'
                         )}

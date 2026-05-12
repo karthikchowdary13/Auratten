@@ -125,9 +125,10 @@
 }
 
 .activityCard:hover {
-    transform: translateX(4px);
+    transform: translateY(-2px) scale(1.01);
     border-color: rgba(255, 255, 255, 0.15);
     background: rgba(255, 255, 255, 0.04);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
 }
 
 .activityIcon {

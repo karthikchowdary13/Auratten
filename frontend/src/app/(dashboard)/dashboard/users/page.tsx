@@ -210,7 +210,7 @@ export default function UsersPage() {
     if (!isHydrated) {
         return (
             <div className={styles.loadingWrapper}>
-                <Loader2 size={40} className="animate-spin text-primary" />
+                <Loader2 size={40} className="smooth-loader text-primary" />
                 <p>Initializing secure session...</p>
             </div>
         );
@@ -302,7 +302,7 @@ export default function UsersPage() {
 
             {loading ? (
                 <div className={styles.loadingWrapper}>
-                    <Loader2 size={40} className="animate-spin text-primary" />
+                    <Loader2 size={40} className="smooth-loader text-primary" />
                     <p>Syncing institutional directory...</p>
                 </div>
             ) : (
@@ -437,7 +437,7 @@ export default function UsersPage() {
 
                         {drawerLoading ? (
                             <div className="flex flex-col items-center justify-center flex-1 gap-4 text-muted-foreground">
-                                <Loader2 size={32} className="animate-spin text-primary" />
+                                <Loader2 size={32} className="smooth-loader text-primary" />
                                 <p>Loading attendance data...</p>
                             </div>
                         ) : drawerUser && (

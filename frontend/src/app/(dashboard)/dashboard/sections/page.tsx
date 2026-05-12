@@ -153,7 +153,7 @@ export default function SectionsPage() {
         return (
             <div className={styles.container}>
                 <div className={styles.loading}>
-                    <Loader2 size={32} className="animate-spin text-primary" />
+                    <Loader2 size={32} className="smooth-loader text-primary" />
                     <p>Syncing secure workspace...</p>
                 </div>
             </div>
@@ -206,7 +206,7 @@ export default function SectionsPage() {
  
             {loading ? (
                 <div className={styles.loading}>
-                    <Loader2 size={32} className="animate-spin text-primary" />
+                    <Loader2 size={32} className="smooth-loader text-primary" />
                     <p>Fetching institutional sections...</p>
                 </div>
             ) : sections.length === 0 ? (
@@ -348,7 +348,7 @@ export default function SectionsPage() {
                         <div className={styles.studentsListWrapper}>
                             {studentsLoading ? (
                                 <div className="flex flex-col items-center justify-center py-12 gap-3">
-                                    <Loader2 size={24} className="animate-spin text-primary" />
+                                    <Loader2 size={24} className="smooth-loader text-primary" />
                                     <p className="text-sm text-muted-foreground">Syncing member list...</p>
                                 </div>
                             ) : students.length === 0 ? (

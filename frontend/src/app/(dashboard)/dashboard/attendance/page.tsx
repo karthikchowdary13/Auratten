@@ -294,7 +294,7 @@ export default function AttendanceScannerPage() {
     if (!isHydrated) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                <div className="smooth-loader text-primary h-12 w-12 border-[3px]"></div>
             </div>
         );
     }
