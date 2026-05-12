@@ -85,7 +85,7 @@ export default function ThreeBackground() {
         const loader = new GLTFLoader();
         loader.load(
             '/man_holding_phone.glb', // Path to the file you will add
-            (gltf) => {
+            (gltf: any) => {
                 // Remove fallback
                 scene.remove(character);
                 
@@ -107,7 +107,7 @@ export default function ThreeBackground() {
                 (window as any).active3DModel = model;
             },
             undefined,
-            (error) => {
+            (error: any) => {
                 console.log('Using fallback 3D model. Add a file to public/man_holding_phone.glb to replace it.');
                 (window as any).active3DModel = character;
             }
